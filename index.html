@@ -144,7 +144,7 @@ ko:{h1:'진짜 몇 시에 나가야 할까?',sub:'지도 앱은 정류장에 도
  ride:(a,b,n)=>`${a} → ${b}, ${n}`,toStation:s=>`${s}까지 이동`,fromStation:s=>`${s}에서 목적지까지`,atStation:(s,n)=>`${s} 도착, 승강장·탑승구까지 여유 ${n}`,exitStation:n=>`하차 후 역·터미널 빠져나오기 ${n}`,
  train:'열차',xbus:'고속버스',ibus:'시외버스',bus:'버스',subway:'지하철',
  lvLeave:t=>t+' 출발',lvArrive:t=>t+' 도착',onTime:'정시',early:n=>`${n} 일찍`,late:n=>`${n} 지각`,
- missLeg:(nm,iv,res)=>`${nm} (${iv}분 간격)을 놓치면 → ${res}`,missTrain:(nm,nd,res)=>`${nm}를 놓치면 → 가장 빨리 도착하는 다음 차 ${nd}, ${res}`,missNone:nm=>`${nm}를 놓치면 <span class="risk">오늘은 더 이상 차가 없어요</span>`,
+ missLeg:(nm,iv,res)=>`${nm} (${iv}분 간격)을 놓치면 → ${res}`,missTrain:(nm,nd,res)=>`${nm}을(를) 놓치면 → 가장 빨리 도착하는 다음 차 ${nd}, ${res}`,missNone:nm=>`${nm}을(를) 놓치면 <span class="risk">오늘은 더 이상 차가 없어요</span>`,
  firstLeave:'첫차 타려면 출발',lastLeave:'막차 타려면 늦어도',lastTxt:(c,t)=>`${c} 탑승, ${t}쯤 도착.`,cityEnds:'도시 안 지하철·버스의 첫차·막차는 다음 버전에서 추가할게요.',
  noRoute:'경로를 찾지 못했어요.',noService:'이 시각에는 운행하는 차가 없어요. 첫차 전이거나 막차 후일 수 있어요.',schedSub:'실제 시간표 기준',schedTerm:(f,iv)=>`기점 출발 · 첫차 ${f}부터 약 ${iv}분 간격 (추정 시간표)`,cityEndsNote:'지하철은 실제 시간표, 기점 버스는 첫차·배차간격 기준이에요. 중간 정류장에서 타는 버스의 막차는 아직 반영하지 않아요.',noTrain:'고른 시각에 맞는 차편이 없어요. 시각이나 날짜를 바꿔보세요.',apiErr:m=>'ODsay 오류: '+m,netErr:'연결에 실패했어요. 인터넷 연결을 확인해 주세요.',
  nextDeps:'다른 차편',optTrain:'기차',optBus:'고속·시외버스',moreBus:'고속·시외버스도 보기',city:'도시 안',inter:'도시 간'},
@@ -288,14 +288,15 @@ async function attachSched(legs,date){
  }
 }
 const dly=(l,lv)=>l.k==='subway'?Math.round(dBuf(lv,l.min)*.5):dBuf(lv,l.min);
-const proofIdx=(legs,lv)=>{if(!lv.proof)return -1;let bi=-1,bv=-1;legs.forEach((l,i)=>{if(l.k!=='walk'&&l.iv>bv){bv=l.iv;bi=i}});return bi};
+// Cautious: every timetabled ride keeps the next departure as a backup; among headway-only rides, the longest headway gets one extra wait.
+const proofIdx=(legs,lv)=>{if(!lv.proof)return -1;let bi=-1,bv=-1;legs.forEach((l,i)=>{if(l.k!=='walk'&&!l.deps&&l.iv>bv){bv=l.iv;bi=i}});return bi};
 // Backwards from arrival time T. Scheduled rides pick a real departure; others assume a headway wait.
 function planBack(legs,T,lv){
  const firstT=legs.findIndex(l=>l.k!=='walk'),pi=proofIdx(legs,lv);let m=T;const segs=[];
  for(let i=legs.length-1;i>=0;i--){const l=legs[i];
   if(l.k==='walk'){segs.unshift({k:'walk',min:l.min});m-=l.min;continue}
   const pre=lv.board+(i===firstT?0:lv.xfer)+(l.sched==='term'?lv.tc:0),db=dly(l,lv);
-  if(l.deps){const c=l.deps.filter(d=>d+l.min+db<=m);if(!c.length)return null;let d=c[c.length-1];if(i===pi&&c.length>1)d=c[c.length-2];
+  if(l.deps){const c=l.deps.filter(d=>d+l.min+db<=m);if(!c.length)return null;let d=c[c.length-1];if(lv.proof&&c.length>1)d=c[c.length-2];
    segs.unshift({k:'ride',min:l.min,l,at:d},{k:'cush',min:m-d-l.min});segs.unshift({k:'cush',min:pre});m=d-pre;}
   else{const w=Math.round(l.iv*lv.wf)+(i===pi?l.iv:0);segs.unshift({k:'cush',min:w+pre},{k:'ride',min:l.min,l},{k:'cush',min:db});m-=w+pre+l.min+db}
  }
@@ -306,7 +307,7 @@ function planFwd(legs,T,lv,from=0,after=null){
  for(let i=from;i<legs.length;i++){const l=legs[i];
   if(l.k==='walk'){segs.push({k:'walk',min:l.min});c+=l.min;continue}
   const pre=lv.board+(i===firstT?0:lv.xfer)+(l.sched==='term'?lv.tc:0),db=dly(l,lv);
-  if(l.deps){const ready=(i===from&&after!=null)?after+1:c+pre;let k=l.deps.findIndex(d=>d>=ready);if(k>=0&&i===pi)k++;if(k<0||k>=l.deps.length)return null;const d=l.deps[k];
+  if(l.deps){const ready=(i===from&&after!=null)?after+1:c+pre;let k=l.deps.findIndex(d=>d>=ready);if(k>=0&&lv.proof&&!(i===from&&after!=null))k++;if(k<0||k>=l.deps.length)return null;const d=l.deps[k];
    segs.push({k:'cush',min:d-c},{k:'ride',min:l.min,l,at:d},{k:'cush',min:db});c=d+l.min+db}
   else{const w=Math.round(l.iv*lv.wf)+(i===pi?l.iv:0)+(i===from&&after!=null?l.iv:0);segs.push({k:'cush',min:w+pre},{k:'ride',min:l.min,l},{k:'cush',min:db});c+=w+pre+l.min+db}
  }

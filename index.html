@@ -71,7 +71,7 @@ button:focus-visible,input:focus-visible{outline:3px solid var(--lime);outline-o
 .opts button{background:#ffffff14;border:1px solid #ffffff2a;color:var(--bandink);border-radius:10px;padding:8px 12px;font:inherit;font-size:14px;cursor:pointer;text-align:left}
 .opts button[aria-pressed=true]{border-color:var(--lime);box-shadow:inset 0 0 0 1px var(--lime)}
 .opts b{display:block;font-size:16px}
-.cols{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px}
+.cols{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px}
 .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:20px}
 h2{font-size:20px;margin:0 0 4px}.card>p{margin:0 0 14px;color:var(--mute);font-size:14px}
 .risk{color:var(--coral);font-weight:600}.ok{color:light-dark(#1d7a4c,#8fd6a8);font-weight:600}
@@ -109,8 +109,6 @@ body:not(.more) .more,body:not(.more) main{display:none}
 <label class="f"><span data-i="date"></span><input type="date" id="date"></label>
 </div>
 <label class="f"><span id="tlab"></span><input type="time" id="time"></label>
-<div class="f"><span data-i="careful"></span><div class="seg" id="lvl"><button type="button" data-v="relaxed" data-i="relaxed"></button><button type="button" data-v="standard" data-i="standard"></button><button type="button" data-v="cautious" data-i="cautious"></button></div></div>
-<p class="hint" id="lvlhint"></p>
 <button type="submit" class="btn go" id="go" data-i="go"></button>
 <p class="hint" id="quota"></p>
 </form>
@@ -121,7 +119,7 @@ body:not(.more) .more,body:not(.more) main{display:none}
 <main class="band">
 <div class="wrap">
 <div class="cols">
-<section class="card"><h2 data-i="cLv"></h2><p data-i="cLvSub"></p><ul class="list" id="levels"><li>—</li></ul></section>
+<ul id="levels" hidden></ul>
 <section class="card"><h2 data-i="cMiss"></h2><p data-i="cMissSub"></p><ul class="list" id="miss"><li>—</li></ul></section>
 <section class="card"><h2 data-i="cEnds"></h2><p data-i="cEndsSub"></p><ul class="list" id="ends"><li>—</li></ul></section>
 </div>
@@ -140,7 +138,7 @@ ko:{h1:'진짜 몇 시에 나가야 할까?',sub:'지도 앱은 정류장에 도
  go:'안 늦는 출발 시각 계산',searching:'찾는 중…',noCand:'결과가 없어요. 다른 이름으로 찾아보세요.',pickBoth:'출발지와 도착지를 골라주세요.',
  quota:(n,m)=>`오늘 검색 ${n}/${m}회 사용 (같은 검색은 저장해 두고 다시 쓰지 않아요)`,quotaOut:'오늘 무료 검색 횟수(30회)를 다 썼어요. 내일 다시 시도해 주세요.',
  cLv:'여유 단계별 비교',cLvSub:'같은 경로에서 늦어도 나가야 하는 시각.',cMiss:'혹시 놓치면?',cMissSub:'탈것을 하나 놓쳤을 때 결과.',cEnds:'첫차와 막차',cEndsSub:'고른 날짜, 이 경로 기준.',
- how:'<b>계산 방법.</b> ODsay 대중교통 데이터로 경로, 배차간격, KTX·고속버스 시간표를 받아와요. 도착 시각에서 거꾸로 계산하면서 기다리는 시간, 지연, 환승, 역에 미리 도착할 시간을 더해요. 실시간 지연과 공휴일 시간표는 아직 반영하지 않아요. 장소 검색: © OpenStreetMap 기여자 (Photon, Nominatim).',
+ how:'<b>계산 방법.</b> 도착 시각에서 거꾸로 계산해요. 지하철·기차·고속버스와 기점에서 출발하는 버스는 실제(또는 추정) 출발 시각에 맞추고, 중간 정류장에서 타는 버스는 방금 놓쳤다고 보고 배차간격만큼 기다리는 걸로 쳐요. 여기에 정류장·승강장에 2분 일찍(기차·고속버스는 10분), 환승마다 2분, 타는 시간의 15%(기차는 절반)를 지연 여유로 더해요. 데이터는 ODsay에서 받아와요. 실시간 지연과 공휴일 시간표는 아직 반영하지 않아요. 장소 검색: © OpenStreetMap 기여자 (Photon, Nominatim).',
  min:n=>n+'분',time:(h,m,pm)=>`${pm?'오후':'오전'} ${h%12||12}:${m}`,
  leaveBy:'집에서 나갈 시각',arriveAround:'이때 도착한다고 생각하세요',perfect:'지도 앱 기준',extra:'추가 여유',d2d:'전체 소요',
  sLeave:t=>'출발 '+t,sArrive:t=>'도착 '+t,walk:n=>`${n} 걷기`,wait:(n)=>`기다림·여유 ${n}`,every:n=>`${n}분 간격`,noIv:'배차 정보 없음(추정)',
@@ -159,7 +157,7 @@ en:{h1:'When should you really leave?',sub:"Map apps assume your bus arrives the
  go:'Find a safe time to leave',searching:'Searching…',noCand:'No results. Try another name.',pickBoth:'Choose a start and a destination.',
  quota:(n,m)=>`Searches today: ${n}/${m} (repeat searches are reused, not re-sent)`,quotaOut:'All 30 free searches for today are used. Try again tomorrow.',
  cLv:'Safety levels compared',cLvSub:'Latest time to leave for the same trip.',cMiss:'If something goes wrong',cMissSub:'What happens if you miss one ride.',cEnds:'First and last service',cEndsSub:'On the chosen date, for this route.',
- how:'<b>How it works.</b> Leeway gets routes, headways and KTX/express-bus timetables from ODsay. It works backwards from your arrival time, adding waiting time, delays, transfers and time to get to the platform. Live delays and holiday timetables are not included yet. Place search: © OpenStreetMap contributors (Photon, Nominatim).',
+ how:'<b>How it works.</b> Leeway works backwards from your arrival time. Subway, trains, express buses and buses leaving their terminus are matched to real (or estimated) departure times; buses picked up mid-route assume you just missed one, so you wait a full headway. It adds 2 min to reach the stop or platform (10 min for trains and express buses), 2 min per transfer, and 15% of ride time for delays (half that for trains). Data comes from ODsay. Live delays and holiday timetables are not included yet. Place search: © OpenStreetMap contributors (Photon, Nominatim).',
  min:n=>n+' min',time:(h,m,pm)=>`${h%12||12}:${m} ${pm?'pm':'am'}`,
  leaveBy:'Leave by',arriveAround:'Plan to arrive by',perfect:'Map-app estimate',extra:'Extra leeway',d2d:'Door to door',
  sLeave:t=>'Leave '+t,sArrive:t=>'Arrive '+t,walk:n=>`Walk ${n}`,wait:n=>`Wait & cushion ${n}`,every:n=>`every ${n} min`,noIv:'no headway data (estimated)',
@@ -176,6 +174,7 @@ const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&g
 const kst=()=>new Date(Date.now()+9*3600e3).toISOString();
 const S={from:null,to:null,mode:'arrive',time:'09:00',date:kst().slice(0,10),lvl:'standard',lang:null,favs:[],pick:'train'};
 try{Object.assign(S,JSON.parse(localStorage.getItem('lw-kr')||'{}'))}catch(e){}
+S.lvl='standard'; // one recommendation: no safety-level choice
 if(!S.lang)S.lang=(navigator.language||'ko').toLowerCase().startsWith('ko')?'ko':'en';
 if(S.date<kst().slice(0,10))S.date=kst().slice(0,10);
 const save=()=>{try{localStorage.setItem('lw-kr',JSON.stringify(S))}catch(e){}};
@@ -467,8 +466,8 @@ async function run(){
 function applyLang(){
  document.documentElement.lang=S.lang;
  for(const e of document.querySelectorAll('[data-i]'))e.textContent=t(e.dataset.i);
- $('lvlhint').textContent=t('h_'+S.lvl);$('tlab').textContent=S.mode==='arrive'?t('arriveLab'):t('leaveLab');$('how').innerHTML=t('how');
- for(const g of ['mode','lvl','lang'])for(const x of document.querySelectorAll('#'+g+' button'))x.setAttribute('aria-pressed',x.dataset.v===S[g]);
+ $('tlab').textContent=S.mode==='arrive'?t('arriveLab'):t('leaveLab');$('how').innerHTML=t('how');
+ for(const g of ['mode','lang'])for(const x of document.querySelectorAll('#'+g+' button'))x.setAttribute('aria-pressed',x.dataset.v===S[g]);
  placeBox('from');placeBox('to');renderFavs();showQuota();
 }
 for(const w of ['from','to'])$(w+'Box').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;const a=b.dataset.a;
@@ -478,7 +477,7 @@ for(const w of ['from','to'])$(w+'Box').addEventListener('click',e=>{const b=e.t
 for(const w of ['from','to'])$(w+'Box').addEventListener('keydown',e=>{if(e.key==='Enter'&&e.target.id===w+'Q'){e.preventDefault();find(w)}});
 $('favs').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;const f=S.favs[+b.dataset.i];if(!S.from)S.from=f;else S.to=f;save();placeBox('from');placeBox('to')});
 $('favs').addEventListener('contextmenu',e=>{const b=e.target.closest('button');if(!b)return;e.preventDefault();S.favs.splice(+b.dataset.i,1);save();renderFavs()});
-for(const g of ['mode','lvl','lang'])$(g).addEventListener('click',e=>{const x=e.target.closest('button');if(!x)return;S[g]=x.dataset.v;save();applyLang();if(g!=='lang'&&$('res').querySelector('.big'))run()});
+for(const g of ['mode','lang'])$(g).addEventListener('click',e=>{const x=e.target.closest('button');if(!x)return;S[g]=x.dataset.v;save();applyLang();if(g!=='lang'&&$('res').querySelector('.big'))run()});
 $('time').addEventListener('change',e=>{if(e.target.value){S.time=e.target.value;save()}});
 $('date').addEventListener('change',e=>{if(e.target.value){S.date=e.target.value;save()}});
 $('f').addEventListener('submit',e=>{e.preventDefault();S.cityOpt=null;run()});

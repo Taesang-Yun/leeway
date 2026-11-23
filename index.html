@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#00463c">
+<title>Leeway · 안 늦는 길찾기</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon.svg">
+<link rel="apple-touch-icon" href="icon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@600;700;800&family=Inter:wght@400;500;600&family=Noto+Sans+KR:wght@400;500;700;800&display=swap">
+<style>
+:root{color-scheme:light dark;
+--bg:light-dark(#f4f6f2,#0d1512);--card:light-dark(#ffffff,#16211c);--ink:light-dark(#14201b,#e8efe9);
+--mute:light-dark(#5b6b63,#94a69c);--line:light-dark(#dfe6e0,#26352d);
+--band:#00463c;--bandink:#f1f7f2;--lime:#d4f07a;--coral:#ff6f59}
+*{box-sizing:border-box;min-width:0}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 Inter,"Noto Sans KR",system-ui,sans-serif;overflow-x:clip}
+:lang(ko) body{word-break:keep-all}
+.band{padding:clamp(20px,4vw,52px) max(5vw,16px)}
+.wrap{max-width:1240px;margin:0 auto}
+h1,h2,.big{font-family:"Inter Tight","Noto Sans KR",Inter,sans-serif;letter-spacing:-.01em}
+.top{background:var(--band);color:var(--bandink)}
+.bar{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:16px}
+.brand{display:flex;align-items:center;gap:10px;font-weight:600}
+.brand i{width:22px;height:22px;border-radius:6px;background:var(--lime);display:inline-block;position:relative}
+.brand i::after{content:"";position:absolute;inset:6px 4px;border-top:3px solid var(--band);border-bottom:3px solid var(--band)}
+h1{font-size:clamp(28px,4vw,46px);line-height:1.1;margin:0 0 6px;text-wrap:balance}
+.sub{margin:0 0 20px;opacity:.8;max-width:62ch}
+.grid{display:grid;grid-template-columns:minmax(0,370px) minmax(0,1fr);gap:clamp(18px,3vw,44px);align-items:start}
+.ctl{display:grid;gap:12px}
+.f{display:grid;gap:6px;font-size:14px;font-weight:500}
+.row2{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:8px}
+.srch{display:flex;gap:6px}
+input{font:inherit;font-size:16px;height:46px;border-radius:10px;border:1px solid #ffffff33;background:#ffffff14;color:var(--bandink);padding:0 12px;width:100%}
+input::placeholder{color:#ffffff88}
+.btn{font:600 15px Inter,"Noto Sans KR",sans-serif;border:0;border-radius:10px;min-height:46px;padding:0 14px;cursor:pointer;background:#ffffff22;color:var(--bandink);white-space:nowrap}
+.btn.go{background:var(--lime);color:#0f2a22;font-size:17px;min-height:52px}
+.btn:disabled{opacity:.5;cursor:default}
+.seg{display:flex;background:#ffffff14;border-radius:10px;padding:3px;gap:3px;flex-wrap:wrap}
+.seg button{flex:1;min-height:40px;border:0;border-radius:8px;background:transparent;color:var(--bandink);font:500 15px Inter,"Noto Sans KR",sans-serif;cursor:pointer;padding:0 10px}
+.seg button[aria-pressed=true]{background:var(--lime);color:#0f2a22;font-weight:600}
+.lang button{min-height:36px;font-size:14px;flex:none;padding:0 12px}
+button:focus-visible,input:focus-visible{outline:3px solid var(--lime);outline-offset:2px}
+.picked{display:flex;align-items:center;justify-content:space-between;gap:8px;background:#ffffff14;border-radius:10px;padding:10px 12px;font-weight:600}
+.picked small{font-weight:400;opacity:.7}
+.picked button{background:none;border:0;color:var(--bandink);opacity:.8;cursor:pointer;font:inherit;font-size:14px;min-height:32px}
+.cands{display:grid;gap:4px;margin-top:6px}
+.cands button{text-align:left;background:#ffffff10;border:1px solid #ffffff22;border-radius:8px;color:var(--bandink);padding:8px 10px;font:inherit;font-size:15px;cursor:pointer}
+.cands small{opacity:.7}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chips button{background:#ffffff14;border:1px solid #ffffff2a;color:var(--bandink);border-radius:999px;padding:4px 12px;font:inherit;font-size:14px;cursor:pointer;min-height:34px}
+.hint{font-size:13px;opacity:.75;margin:0}
+.lead{font-size:15px;opacity:.85;margin:0}
+.big{font-size:clamp(48px,8vw,88px);font-weight:800;line-height:1;margin:4px 0 10px;white-space:nowrap}
+.cmp{display:flex;flex-wrap:wrap;gap:8px 22px;font-size:15px;margin-bottom:18px;opacity:.88}
+.cmp b{white-space:nowrap}
+.strip{display:flex;height:54px;border-radius:10px;overflow:hidden;background:#ffffff10}
+.strip div{display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;color:#fff;white-space:nowrap;overflow:hidden;border-right:1px solid #00463c}
+.strip .walk{background:repeating-linear-gradient(135deg,#ffffff30 0 6px,#ffffff18 6px 12px)}
+.strip .cush{background:repeating-linear-gradient(135deg,var(--lime) 0 6px,#bfe05f 6px 12px);color:#0f2a22}
+.ends{display:flex;justify-content:space-between;font-size:13px;margin-top:6px;opacity:.85}
+.steps{list-style:none;margin:18px 0 0;padding:0;border-top:1px solid #ffffff22}
+.steps li{display:grid;grid-template-columns:6em minmax(0,1fr);gap:12px;padding:9px 0;border-bottom:1px solid #ffffff18;font-size:15px}
+.steps time{font-weight:600;white-space:nowrap;text-align:right}
+.steps .c{color:var(--lime)}.steps small{opacity:.75}
+.dot{display:inline-block;padding:1px 8px;border-radius:6px;color:#fff;font-weight:600;font-size:13px;margin-right:6px;white-space:nowrap}
+.none{background:#ffffff12;border-radius:12px;padding:20px}
+.opts{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 16px}
+.opts button{background:#ffffff14;border:1px solid #ffffff2a;color:var(--bandink);border-radius:10px;padding:8px 12px;font:inherit;font-size:14px;cursor:pointer;text-align:left}
+.opts button[aria-pressed=true]{border-color:var(--lime);box-shadow:inset 0 0 0 1px var(--lime)}
+.opts b{display:block;font-size:16px}
+.cols{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:20px}
+h2{font-size:20px;margin:0 0 4px}.card>p{margin:0 0 14px;color:var(--mute);font-size:14px}
+.risk{color:var(--coral);font-weight:600}.ok{color:light-dark(#1d7a4c,#8fd6a8);font-weight:600}
+.list{list-style:none;margin:0;padding:0}.list li{padding:10px 0;border-top:1px solid var(--line);font-size:15px}
+.list li:first-child{border-top:0}
+.lv{display:flex;justify-content:space-between;gap:12px}.lv b{white-space:nowrap}.lv span:first-child{color:var(--mute)}
+.lv.on span:first-child{color:var(--ink);font-weight:600}
+.how{font-size:14px;color:var(--mute);max-width:80ch;margin:28px 0 0}.how b{color:var(--ink)}
+.spin{display:inline-block;width:16px;height:16px;border:2px solid #ffffff55;border-top-color:var(--lime);border-radius:50%;animation:sp 1s linear infinite;vertical-align:-3px;margin-right:8px}
+@keyframes sp{to{transform:rotate(1turn)}}
+@media(max-width:900px){.grid,.cols{grid-template-columns:minmax(0,1fr)}}
+@media(max-width:600px){.steps li{grid-template-columns:5.2em minmax(0,1fr)}}
+@media(prefers-reduced-motion:reduce){.spin{animation:none}}
+</style>
+</head>
+<body>
+<header class="top band">
+<div class="wrap">
+<div class="bar">
+<div class="brand"><i></i>Leeway</div>
+<div class="seg lang" id="lang"><button type="button" data-v="ko" lang="ko">한국어</button><button type="button" data-v="en" lang="en">English</button></div>
+</div>
+<h1 data-i="h1"></h1>
+<p class="sub" data-i="sub"></p>
+<div class="grid">
+<form class="ctl" id="f" autocomplete="off">
+<div class="f"><span data-i="from"></span><div id="fromBox"></div></div>
+<div class="f"><span data-i="to"></span><div id="toBox"></div></div>
+<div class="chips" id="favs"></div>
+<div class="row2">
+<div class="f"><span data-i="planby"></span><div class="seg" id="mode"><button type="button" data-v="arrive" data-i="arriveBy"></button><button type="button" data-v="leave" data-i="leaveAt"></button></div></div>
+<label class="f"><span data-i="date"></span><input type="date" id="date"></label>
+</div>
+<label class="f"><span id="tlab"></span><input type="time" id="time"></label>
+<div class="f"><span data-i="careful"></span><div class="seg" id="lvl"><button type="button" data-v="relaxed" data-i="relaxed"></button><button type="button" data-v="standard" data-i="standard"></button><button type="button" data-v="cautious" data-i="cautious"></button></div></div>
+<p class="hint" id="lvlhint"></p>
+<button type="submit" class="btn go" id="go" data-i="go"></button>
+<p class="hint" id="quota"></p>
+</form>
+<section id="res" aria-live="polite"></section>
+</div>
+</div>
+</header>
+<main class="band">
+<div class="wrap">
+<div class="cols">
+<section class="card"><h2 data-i="cLv"></h2><p data-i="cLvSub"></p><ul class="list" id="levels"><li>—</li></ul></section>
+<section class="card"><h2 data-i="cMiss"></h2><p data-i="cMissSub"></p><ul class="list" id="miss"><li>—</li></ul></section>
+<section class="card"><h2 data-i="cEnds"></h2><p data-i="cEndsSub"></p><ul class="list" id="ends"><li>—</li></ul></section>
+</div>
+<p class="how" id="how"></p>
+</div>
+</main>
+<script>
+{
+const KEY='qLkf64lrh/4MZF/oEDmU0DoEp/ATUCnLO8v+kuzuLFs',API='https://api.odsay.com/v1/api/',DAILY=30;
+const I={
+ko:{h1:'진짜 몇 시에 나가야 할까?',sub:'지도 앱은 정류장에 도착하자마자 버스가 온다고 가정해요. Leeway는 배차간격, 환승, 지연, 막차까지 따져서 안 늦는 출발 시각을 알려줘요.',
+ from:'출발',to:'도착',ph:'역, 정류장, 터미널 이름',find:'찾기',change:'바꾸기',saveFav:'★ 저장',planby:'기준',arriveBy:'도착 시각',leaveAt:'출발 시각',date:'날짜',
+ arriveLab:'이때까지 도착',leaveLab:'이때 출발',careful:'얼마나 여유 있게?',relaxed:'빠듯하게',standard:'보통',cautious:'넉넉하게',
+ h_relaxed:'평균만큼만 기다린다고 계산. 지연 여유 없음.',h_standard:'탈 때마다 방금 놓쳤다고 가정(배차간격만큼 대기), 지연 여유 15%, 환승마다 2분.',
+ h_cautious:'보통 + 지연 여유 30%, 환승마다 4분, 그리고 하나를 더 놓쳐도 늦지 않게.',
+ go:'안 늦는 출발 시각 계산',searching:'찾는 중…',noCand:'결과가 없어요. 다른 이름으로 찾아보세요.',pickBoth:'출발지와 도착지를 골라주세요.',
+ quota:(n,m)=>`오늘 검색 ${n}/${m}회 사용 (같은 검색은 저장해 두고 다시 쓰지 않아요)`,quotaOut:'오늘 무료 검색 횟수(30회)를 다 썼어요. 내일 다시 시도해 주세요.',
+ cLv:'여유 단계별 비교',cLvSub:'같은 경로에서 늦어도 나가야 하는 시각.',cMiss:'혹시 놓치면?',cMissSub:'탈것을 하나 놓쳤을 때 결과.',cEnds:'첫차와 막차',cEndsSub:'고른 날짜, 이 경로 기준.',
+ how:'<b>계산 방법.</b> ODsay 대중교통 데이터로 경로, 배차간격, KTX·고속버스 시간표를 받아와요. 도착 시각에서 거꾸로 계산하면서 기다리는 시간, 지연, 환승, 역에 미리 도착할 시간을 더해요. 실시간 지연과 공휴일 시간표는 아직 반영하지 않아요.',
+ min:n=>n+'분',time:(h,m,pm)=>`${pm?'오후':'오전'} ${h%12||12}:${m}`,
+ leaveBy:'집에서 나갈 시각',arriveAround:'이때 도착한다고 생각하세요',perfect:'지도 앱 기준',extra:'추가 여유',d2d:'전체 소요',
+ sLeave:t=>'출발 '+t,sArrive:t=>'도착 '+t,walk:n=>`${n} 걷기`,wait:(n)=>`기다림·여유 ${n}`,every:n=>`${n}분 간격`,noIv:'배차 정보 없음(추정)',
+ ride:(a,b,n)=>`${a} → ${b}, ${n}`,toStation:s=>`${s}까지 이동`,fromStation:s=>`${s}에서 목적지까지`,atStation:(s,n)=>`${s} 도착, 승강장·탑승구까지 여유 ${n}`,exitStation:n=>`하차 후 역·터미널 빠져나오기 ${n}`,
+ train:'열차',xbus:'고속버스',ibus:'시외버스',bus:'버스',subway:'지하철',
+ lvLeave:t=>t+' 출발',lvArrive:t=>t+' 도착',onTime:'정시',early:n=>`${n} 일찍`,late:n=>`${n} 지각`,
+ missLeg:(nm,iv,res)=>`${nm} (${iv}분 간격)을 놓치면 → ${res}`,missTrain:(nm,nd,res)=>`${nm}을 놓치면 → 다음 차 ${nd}, ${res}`,missNone:nm=>`${nm}을 놓치면 <span class="risk">오늘은 더 이상 차가 없어요</span>`,
+ firstLeave:'첫차 타려면 출발',lastLeave:'막차 타려면 늦어도',lastTxt:(c,t)=>`${c} 탑승, ${t}쯤 도착.`,cityEnds:'도시 안 지하철·버스의 첫차·막차는 다음 버전에서 추가할게요.',
+ noRoute:'경로를 찾지 못했어요.',noTrain:'고른 시각에 맞는 차편이 없어요. 시각이나 날짜를 바꿔보세요.',apiErr:m=>'ODsay 오류: '+m,netErr:'연결에 실패했어요. 인터넷 연결을 확인해 주세요.',
+ nextDeps:'다른 차편',optTrain:'기차',optBus:'고속·시외버스',moreBus:'고속·시외버스도 보기',city:'도시 안',inter:'도시 간'},
+en:{h1:'When should you really leave?',sub:"Map apps assume your bus arrives the moment you reach the stop. Leeway accounts for headways, transfers, delays and last trains, and tells you when to leave so you're not late.",
+ from:'From',to:'To',ph:'Station, stop or terminal name',find:'Search',change:'Change',saveFav:'★ Save',planby:'Plan by',arriveBy:'Arrive by',leaveAt:'Leave at',date:'Date',
+ arriveLab:'Arrive by',leaveLab:'Leave at',careful:'How careful?',relaxed:'Relaxed',standard:'Standard',cautious:'Cautious',
+ h_relaxed:'Average waits only. No delay cushion.',h_standard:'Assumes you just missed every ride (a full headway wait), +15% delay cushion, +2 min per transfer.',
+ h_cautious:'Standard + 30% delay cushion, +4 min per transfer, and still on time if you miss one more ride.',
+ go:'Find a safe time to leave',searching:'Searching…',noCand:'No results. Try another name.',pickBoth:'Choose a start and a destination.',
+ quota:(n,m)=>`Searches today: ${n}/${m} (repeat searches are reused, not re-sent)`,quotaOut:'All 30 free searches for today are used. Try again tomorrow.',
+ cLv:'Safety levels compared',cLvSub:'Latest time to leave for the same trip.',cMiss:'If something goes wrong',cMissSub:'What happens if you miss one ride.',cEnds:'First and last service',cEndsSub:'On the chosen date, for this route.',
+ how:'<b>How it works.</b> Leeway gets routes, headways and KTX/express-bus timetables from ODsay. It works backwards from your arrival time, adding waiting time, delays, transfers and time to get to the platform. Live delays and holiday timetables are not included yet.',
+ min:n=>n+' min',time:(h,m,pm)=>`${h%12||12}:${m} ${pm?'pm':'am'}`,
+ leaveBy:'Leave by',arriveAround:'Plan to arrive by',perfect:'Map-app estimate',extra:'Extra leeway',d2d:'Door to door',
+ sLeave:t=>'Leave '+t,sArrive:t=>'Arrive '+t,walk:n=>`Walk ${n}`,wait:n=>`Wait & cushion ${n}`,every:n=>`every ${n} min`,noIv:'no headway data (estimated)',
+ ride:(a,b,n)=>`${a} → ${b}, ${n}`,toStation:s=>`Get to ${s}`,fromStation:s=>`From ${s} to your destination`,atStation:(s,n)=>`At ${s}, ${n} to reach the platform/gate`,exitStation:n=>`Get out of the station ${n}`,
+ train:'Train',xbus:'Express bus',ibus:'Intercity bus',bus:'Bus',subway:'Subway',
+ lvLeave:t=>'leave '+t,lvArrive:t=>'arrive '+t,onTime:'on time',early:n=>`${n} early`,late:n=>`${n} late`,
+ missLeg:(nm,iv,res)=>`Miss ${nm} (every ${iv} min) → ${res}`,missTrain:(nm,nd,res)=>`Miss the ${nm} → next at ${nd}, ${res}`,missNone:nm=>`Miss the ${nm} → <span class="risk">no more service today</span>`,
+ firstLeave:'First service: leave',lastLeave:'Last service: leave by',lastTxt:(c,t)=>`Take the ${c}, arrive around ${t}.`,cityEnds:'First/last trains for city subway and buses are coming in the next version.',
+ noRoute:'No route found.',noTrain:'No service fits that time. Try another time or date.',apiErr:m=>'ODsay error: '+m,netErr:'Connection failed. Check your internet connection.',
+ nextDeps:'Other departures',optTrain:'Train',optBus:'Express/intercity bus',moreBus:'Also check buses',city:'City',inter:'Intercity'}};
+const LV={relaxed:{wf:.5,pct:0,min:0,xfer:0,board:1,st:5,exit:2},standard:{wf:1,pct:.15,min:2,xfer:2,board:2,st:10,exit:5},cautious:{wf:1,pct:.3,min:4,xfer:4,board:3,st:15,exit:8,proof:1}};
+const $=id=>document.getElementById(id);
+const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const kst=()=>new Date(Date.now()+9*3600e3).toISOString();
+const S={from:null,to:null,mode:'arrive',time:'09:00',date:kst().slice(0,10),lvl:'standard',lang:null,favs:[],pick:'train'};
+try{Object.assign(S,JSON.parse(localStorage.getItem('lw-kr')||'{}'))}catch(e){}
+if(!S.lang)S.lang=(navigator.language||'ko').toLowerCase().startsWith('ko')?'ko':'en';
+if(S.date<kst().slice(0,10))S.date=kst().slice(0,10);
+const save=()=>{try{localStorage.setItem('lw-kr',JSON.stringify(S))}catch(e){}};
+const t=(k,...a)=>{const v=I[S.lang][k]??I.ko[k];return typeof v==='function'?v(...a):v};
+const fmt=m=>{m=((Math.round(m)%1440)+1440)%1440;const h=Math.floor(m/60);return t('time',h,String(m%60).padStart(2,'0'),h>=12)};
+const hm=s=>{const [h,m]=String(s).split(':').map(Number);return h*60+(m||0)};
+const mins=n=>t('min',Math.round(n));
+const dBuf=(lv,ride)=>lv.pct?Math.max(lv.min,Math.round(ride*lv.pct)):0;
+const km=(a,b)=>{const R=6371,r=Math.PI/180,dx=(b.x-a.x)*r*Math.cos((a.y+b.y)/2*r),dy=(b.y-a.y)*r;return R*Math.hypot(dx,dy)};
+// ---------- API with cache + daily counter ----------
+const qKey=()=>'lw-q-'+kst().slice(0,10);
+const used=()=>{try{return +localStorage.getItem(qKey())||0}catch(e){return 0}};
+const mem={};
+async function api(path,params,ttlH){
+ const p={lang:S.lang==='en'?1:0,...params},ck='lw-c-'+path+'?'+Object.keys(p).sort().map(k=>k+'='+p[k]).join('&');
+ if(mem[ck])return mem[ck];
+ try{const c=JSON.parse(localStorage.getItem(ck)||'null');if(c&&c.exp>Date.now())return mem[ck]=c.v}catch(e){}
+ if(used()>=DAILY)throw new Error(t('quotaOut'));
+ const u=new URL(API+path);for(const [k,v] of Object.entries({...p,apiKey:KEY}))u.searchParams.set(k,v);
+ let j;try{const r=await fetch(u);j=await r.json()}catch(e){throw new Error(t('netErr'))}
+ try{localStorage.setItem(qKey(),used()+1)}catch(e){}
+ showQuota();
+ const err=j.error&&(Array.isArray(j.error)?j.error[0]:j.error);
+ if(err)throw new Error(t('apiErr',err.message||err.msg||JSON.stringify(err)));
+ mem[ck]=j;try{localStorage.setItem(ck,JSON.stringify({exp:Date.now()+ttlH*3600e3,v:j}))}catch(e){}
+ return j;
+}
+const showQuota=()=>{$('quota').textContent=t('quota',used(),DAILY)};
+// ---------- place pickers ----------
+const cands={from:null,to:null},q={from:'',to:''};
+function placeBox(which){
+ const box=$(which+'Box'),p=S[which];
+ if(p){box.innerHTML=`<div class="picked"><span>${esc(p.name)} <small>${esc(p.city||'')}</small></span><span><button type="button" data-a="fav">${t('saveFav')}</button> <button type="button" data-a="clr">${t('change')}</button></span></div>`;return}
+ box.innerHTML=`<div class="srch"><input id="${which}Q" placeholder="${t('ph')}" value="${esc(q[which])}"><button type="button" class="btn" data-a="find">${t('find')}</button></div><div class="cands">${cands[which]===null?'':cands[which].length?cands[which].map((c,i)=>`<button type="button" data-a="pick" data-i="${i}">${esc(c.name)} <small>${esc(c.kind)} · ${esc(c.city)}</small></button>`).join(''):`<p class="hint">${t('noCand')}</p>`}</div>`;
+}
+const KIND={ko:{1:'버스정류장',2:'지하철역',3:'기차역',4:'고속버스터미널',5:'공항',6:'시외버스터미널'},en:{1:'Bus stop',2:'Subway',3:'Rail station',4:'Express terminal',5:'Airport',6:'Intercity terminal'}};
+async function find(which){
+ const v=$(which+'Q').value.trim();q[which]=v;if(!v)return;
+ cands[which]=[];$(which+'Box').querySelector('.cands').innerHTML=`<p class="hint"><span class="spin"></span>${t('searching')}</p>`;
+ try{const j=await api('searchStation',{stationName:v},24*30);
+  const seen=new Set();cands[which]=(j.result?.station||[]).filter(s=>{const k=s.stationName+s.cityName+s.stationClass;if(seen.has(k))return false;seen.add(k);return true}).slice(0,8)
+   .map(s=>({name:s.stationName,x:+s.x,y:+s.y,city:s.cityName||'',kind:KIND[S.lang][s.stationClass]||''}));
+ }catch(e){cands[which]=[];$(which+'Box').querySelector('.cands').innerHTML=`<p class="hint">${esc(e.message)}</p>`;return}
+ placeBox(which);
+}
+function renderFavs(){$('favs').innerHTML=S.favs.map((f,i)=>`<button type="button" data-i="${i}" title="${esc(f.city)}">${esc(f.name)}</button>`).join('')}
+// ---------- route models ----------
+const IVDEF={bus:15,subway:8};
+function cityLegs(path){
+ return path.subPath.map(s=>{
+  if(s.trafficType===3)return{k:'walk',min:s.sectionTime||0};
+  const isSub=s.trafficType===1,l=(s.lane||[])[0]||{};
+  const iv=s.intervalTime>0?s.intervalTime:null;
+  return{k:isSub?'subway':'bus',min:s.sectionTime||0,iv:iv??IVDEF[isSub?'subway':'bus'],ivKnown:!!iv,name:isSub?(l.name||t('subway')):(l.busNo||t('bus')),from:s.startName,to:s.endName,color:isSub?(SUBCOL[l.subwayCode]||'#3b82f6'):'#2f9e5b'};
+ }).filter(l=>l.min>0||l.k!=='walk');
+}
+const SUBCOL={1:'#0052A4',2:'#00A84D',3:'#EF7C1C',4:'#00A5DE',5:'#996CAC',6:'#CD7C2F',7:'#747F00',8:'#E6186C',9:'#BDB092',101:'#0090D2',104:'#77C4A3',108:'#178C72',109:'#D4003B',116:'#F5A200'};
+// Duration of a city trip at a safety level. Returns {dur, segs}
+function cityPlan(legs,lv){
+ const transit=legs.filter(l=>l.k!=='walk');let segs=[],dur=0,first=true;
+ const maxIv=Math.max(0,...transit.map(l=>l.iv));let extraUsed=false;
+ for(const l of legs){
+  if(l.k==='walk'){segs.push({k:'walk',min:l.min,l});dur+=l.min;continue}
+  let wait=Math.round(l.iv*lv.wf)+lv.board+(first?0:lv.xfer);
+  if(lv.proof&&!extraUsed&&l.iv===maxIv){wait+=l.iv;extraUsed=true}
+  segs.push({k:'cush',min:wait});segs.push({k:'ride',min:l.min,l});const db=dBuf(lv,l.min);if(db)segs.push({k:'cush',min:db});
+  dur+=wait+l.min+db;first=false;
+ }
+ return{dur,segs};
+}
+const perfectCity=(path,legs)=>path.info?.totalTime||legs.reduce((a,l)=>a+l.min,0);
+// ---------- intercity schedules ----------
+const DOW='일월화수목금토';
+function runs(rd,date){if(!rd||/매일|daily/i.test(rd))return true;const d=DOW[new Date(date+'T12:00:00+09:00').getDay()];return rd.includes(d)}
+function parseSched(type,j,ride,date){
+ const r=j.result||{};let out=[];
+ if(type===4){for(const s of r.station||[])if(runs(s.runDay,date)){let d=hm(s.departureTime),a=hm(s.arrivalTime);if(a<d)a+=1440;out.push({dep:d,arr:a,cls:(s.trainClass||'')+(s.trainNo?' '+s.trainNo:'')})}}
+ else{for(const s of r.station||[]){const w=s.wasteTime?hm(s.wasteTime):ride;for(const part of [s.schedule,s.nightSchedule])if(part)for(const x of String(part).split(',')){const m=x.match(/(\d{1,2}):(\d{2})(?:\((.+?)\))?/);if(!m)continue;const d=+m[1]*60+ +m[2];out.push({dep:d,arr:d+w,cls:(m[3]||(S.lang==='ko'?'일반':'Standard'))})}}}
+ const seen=new Set();out=out.filter(o=>{const k=o.dep+'|'+o.arr;if(seen.has(k))return false;seen.add(k);return true}).sort((a,b)=>a.dep-b.dep);
+ return out;
+}
+// access leg (origin -> station). Returns {safe, perfect, legs} using a city search when far.
+async function access(a,b,lv){
+ const d=km(a,b);
+ if(d<0.7){const w=Math.max(2,Math.ceil(d*1000*1.3/70));return{walkOnly:true,legs:[{k:'walk',min:w}],safe:w,perfect:w}}
+ const j=await api('searchPubTransPathT',{SX:a.x,SY:a.y,EX:b.x,EY:b.y},20);
+ const paths=(j.result?.path||[]).slice(0,4);if(!paths.length){const w=Math.ceil(d*1000*1.3/70);return{legs:[{k:'walk',min:w}],safe:w,perfect:w}}
+ let best=null;for(const p of paths){const legs=cityLegs(p);const s=cityPlan(legs,lv).dur;if(!best||s<best.safe)best={legs,safe:s,perfect:perfectCity(p,legs),path:p}}
+ best.byLv=Object.fromEntries(Object.keys(LV).map(k=>[k,cityPlan(best.legs,LV[k]).dur]));
+ return best;
+}
+// ---------- rendering helpers ----------
+const lateTxt=(a,T)=>a<=T?`<span class="ok">${a===T?t('onTime'):t('early',mins(T-a))}</span>`:`<span class="risk">${t('late',mins(a-T))}</span>`;
+function stripHtml(segs,start,end){
+ const tot=Math.max(1,end-start);
+ return `<div class="strip" role="img" aria-label="${t('sLeave',fmt(start))} → ${t('sArrive',fmt(end))}">${segs.filter(s=>s.min>0).map(s=>{const w=s.min/tot*100;
+  if(s.k==='ride')return `<div style="width:${w}%;background:${s.l.color}" title="${esc(s.l.name)}">${w>9?esc(s.l.short||s.l.name):''}</div>`;
+  return `<div class="${s.k==='walk'?'walk':'cush'}" style="width:${w}%">${w>7?Math.round(s.min)+'′':''}</div>`}).join('')}</div>
+  <div class="ends"><span>${t('sLeave',fmt(start))}</span><span>${t('sArrive',fmt(end))}</span></div>`;
+}
+function stepsHtml(segs,start){
+ let c=start;const rows=[];let pend=0;
+ const flush=()=>{if(pend>0)rows.push(`<li><time></time><span class="c">${t('wait',mins(pend))}</span></li>`);pend=0};
+ for(const s of segs){
+  if(s.k==='cush'){pend+=s.min;c+=s.min;continue}flush();
+  if(s.k==='walk')rows.push(`<li><time>${fmt(c)}</time><span>${esc(s.text||t('walk',mins(s.min)))}</span></li>`);
+  else if(s.k==='note')rows.push(`<li><time>${s.at!=null?fmt(s.at):''}</time><span>${s.html}</span></li>`);
+  else{const l=s.l;rows.push(`<li><time>${fmt(s.at??c)}</time><span><span class="dot" style="background:${l.color}">${esc(l.name)}</span>${esc(t('ride',l.from,l.to,mins(s.min)))}<br><small>${l.iv?t('every',l.iv)+(l.ivKnown===false?' · '+t('noIv'):''):''}${l.extra||''}</small></span></li>`)}
+  c+=s.min;
+ }
+ flush();return `<ol class="steps">${rows.join('')}</ol>`;
+}
+const blank=(m,spin)=>{$('res').innerHTML=`<div class="none"><p class="lead">${spin?'<span class="spin"></span>':''}${m}</p></div>`};
+// ---------- city ----------
+async function runCity(T){
+ const j=await api('searchPubTransPathT',{SX:S.from.x,SY:S.from.y,EX:S.to.x,EY:S.to.y},20);
+ const paths=(j.result?.path||[]).slice(0,5);if(!paths.length)return blank(t('noRoute'));
+ const lv=LV[S.lvl],arrive=S.mode==='arrive';
+ const opts=paths.map(p=>{const legs=cityLegs(p),pl=cityPlan(legs,lv),pf=perfectCity(p,legs);return{p,legs,pl,pf,leave:arrive?T-pl.dur:T,arr:arrive?T:T+pl.dur}}).sort((a,b)=>arrive?b.leave-a.leave:a.arr-b.arr);
+ const sel=opts[Math.min(S.cityOpt||0,opts.length-1)];
+ const label=o=>o.legs.filter(l=>l.k!=='walk').map(l=>l.name).join(' → ');
+ const big=arrive?sel.leave:sel.arr,perfect=arrive?T-sel.pf:T+sel.pf;
+ $('res').innerHTML=`<p class="lead">${arrive?t('leaveBy'):t('arriveAround')}</p><div class="big">${fmt(big)}</div>
+ <div class="cmp"><span>${t('perfect')}: <b>${fmt(perfect)}</b></span><span>${t('extra')} <b>${mins(sel.pl.dur-sel.pf)}</b></span><span>${t('d2d')} <b>${mins(sel.pl.dur)}</b></span></div>
+ <div class="opts" id="copts">${opts.map((o,i)=>`<button type="button" data-i="${i}" aria-pressed="${o===sel}"><b>${fmt(arrive?o.leave:o.arr)}</b>${esc(label(o))}</button>`).join('')}</div>
+ ${stripHtml(sel.pl.segs,sel.leave,sel.arr)}${stepsHtml(sel.pl.segs,sel.leave)}`;
+ $('copts').onclick=e=>{const b=e.target.closest('button');if(b){S.cityOpt=+b.dataset.i;save();runCity(T)}};
+ $('levels').innerHTML=[[t('perfect'),sel.pf,'']].concat(Object.keys(LV).map(k=>[t(k),cityPlan(sel.legs,LV[k]).dur,k])).map(([n,d,k])=>`<li class="lv${k===S.lvl?' on':''}"><span>${n}</span><b>${arrive?t('lvLeave',fmt(T-d)):t('lvArrive',fmt(T+d))}</b></li>`).join('');
+ const base=sel.pf;const tr=sel.legs.filter(l=>l.k!=='walk');
+ $('miss').innerHTML=tr.length?tr.map(l=>{const a=sel.leave+base+Math.round(l.iv/2)+l.iv;const T2=arrive?T:sel.arr;return `<li>${t('missLeg',esc(l.name),l.iv,lateTxt(a,T2))}</li>`}).join(''):'<li>—</li>';
+ $('ends').innerHTML=`<li>${t('cityEnds')}</li>`;
+}
+// ---------- intercity ----------
+async function runInter(T){
+ const lv=LV[S.lvl],arrive=S.mode==='arrive';
+ const j=await api('searchPubTransPathT',{SX:S.from.x,SY:S.from.y,EX:S.to.x,EY:S.to.y,SearchType:1},20);
+ const ps=j.result?.path||[];
+ const pick=type=>ps.filter(p=>p.pathType===type&&p.subPath?.length===1).sort((a,b)=>a.info.totalTime-b.info.totalTime)[0];
+ const choices={train:pick(11),bus:pick(12)};
+ if(!choices.train&&!choices.bus)return runCity(T);
+ let which=choices[S.pick]?S.pick:(choices.train?'train':'bus');
+ const path=choices[which],sp=path.subPath[0],tt=sp.trafficType;
+ const st={x:+sp.startX,y:+sp.startY,name:sp.startName},en={x:+sp.endX,y:+sp.endY,name:sp.endName};
+ const ep=tt===4?'trainServiceTime':tt===5?'expressServiceTime':'intercityServiceTime';
+ blank(t('searching'),1);
+ const [sj,A,B]=await Promise.all([api(ep,{startStationID:sp.startID,endStationID:sp.endID},24*7),access(S.from,st,lv),access(en,S.to,lv)]);
+ const deps=parseSched(tt,sj,sp.sectionTime,S.date);if(!deps.length)return blank(t('noTrain'));
+ const kind=tt===4?t('train'):tt===5?t('xbus'):t('ibus'),color=tt===4?'#1f4fbf':'#7a4fd0';
+ const Asafe=k=>A.byLv?A.byLv[k]:A.safe,Bsafe=k=>B.byLv?B.byLv[k]:B.safe;
+ const feasible=(k)=>{const L=LV[k];return deps.filter(d=>d.arr+Math.round(dBuf(L,d.arr-d.dep)*(tt===4?.5:1))+L.exit+Bsafe(k)<=T)};
+ const chooseArrive=k=>{const f=feasible(k);if(!f.length)return null;return LV[k].proof&&f.length>1?f[f.length-2]:f[f.length-1]};
+ const leaveFor=(d,k)=>d.dep-LV[k].st-Asafe(k);
+ const arrFor=(d,k)=>{const L=LV[k];return d.arr+Math.round(dBuf(L,d.arr-d.dep)*(tt===4?.5:1))+L.exit+Bsafe(k)};
+ const chooseLeave=k=>deps.find(d=>d.dep>=T+Asafe(k)+LV[k].st);
+ const k=S.lvl,dep=arrive?chooseArrive(k):chooseLeave(k);
+ const pfDep=arrive?deps.filter(d=>d.arr+B.perfect<=T).pop():deps.find(d=>d.dep>=T+A.perfect);
+ const optBtns=`<div class="opts" id="iopts">${['train','bus'].filter(w=>choices[w]).map(w=>{const s=choices[w].subPath[0];return `<button type="button" data-w="${w}" aria-pressed="${w===which}"><b>${w==='train'?t('optTrain'):t('optBus')}</b>${esc(s.startName)} → ${esc(s.endName)}</button>`}).join('')}</div>`;
+ if(!dep){$('res').innerHTML=optBtns+`<div class="none"><p class="lead">${t('noTrain')}</p></div>`;bindI(T);$('levels').innerHTML=$('miss').innerHTML='<li>—</li>';fillEnds();return}
+ const leave=arrive?leaveFor(dep,k):T,end=arrive?T:arrFor(dep,k);
+ const accSegs=(X,lab)=>X.walkOnly?[{k:'walk',min:X.legs[0].min,text:lab}]:cityPlan(X.legs,lv).segs;
+ const ride=dep.arr-dep.dep,db=Math.round(dBuf(lv,ride)*(tt===4?.5:1));
+ const L={name:kind+' '+dep.cls,short:kind,from:st.name,to:en.name,color,iv:0,extra:''};
+ const aS=accSegs(A,t('toStation',st.name)),aDur=aS.reduce((s,x)=>s+x.min,0);
+ const preWait=dep.dep-leave-aDur;
+ const bS=accSegs(B,t('fromStation',en.name)),bDur=bS.reduce((s,x)=>s+x.min,0);
+ const segs=[...aS,{k:'note',min:0,at:leave+aDur,html:esc(t('atStation',st.name,mins(preWait)))},{k:'cush',min:preWait},{k:'ride',min:ride,l:L,at:dep.dep},...(db+lv.exit?[{k:'note',min:0,at:dep.arr,html:esc(t('exitStation',mins(db+lv.exit)))},{k:'cush',min:db+lv.exit}]:[]),...bS];
+ const used2=aDur+preWait+ride+db+lv.exit+bDur;if(end-leave>used2)segs.push({k:'cush',min:end-leave-used2});
+ $('res').innerHTML=`${optBtns}<p class="lead">${arrive?t('leaveBy'):t('arriveAround')}</p><div class="big">${fmt(arrive?leave:end)}</div>
+ <div class="cmp"><span>${t('perfect')}: <b>${pfDep?fmt(arrive?pfDep.dep-A.perfect:pfDep.arr+B.perfect):'—'}</b></span>${arrive&&pfDep?`<span>${t('extra')} <b>${mins(pfDep.dep-A.perfect-leave)}</b></span>`:''}<span>${t('d2d')} <b>${mins(end-leave)}</b></span></div>
+ ${stripHtml(segs.filter(s=>s.k!=='note'),leave,end)}${stepsHtml(segs,leave)}
+ <p class="hint" style="margin-top:14px">${t('nextDeps')}: ${deps.filter(d=>Math.abs(d.dep-dep.dep)<=120&&d!==dep).slice(0,6).map(d=>`${esc(d.cls)} ${fmt(d.dep)}→${fmt(d.arr)}`).join(' · ')}</p>`;
+ bindI(T);
+ $('levels').innerHTML=[[t('perfect'),pfDep,'']].concat(Object.keys(LV).map(x=>[t(x),arrive?chooseArrive(x):chooseLeave(x),x])).map(([n,d,x])=>{let v='—';if(d){if(x==='')v=arrive?t('lvLeave',fmt(d.dep-A.perfect)):t('lvArrive',fmt(d.arr+B.perfect));else v=arrive?t('lvLeave',fmt(leaveFor(d,x))):t('lvArrive',fmt(arrFor(d,x)))}return `<li class="lv${x===S.lvl?' on':''}"><span>${n}</span><b>${v}</b></li>`}).join('');
+ const nxt=deps.find(d=>d.dep>dep.dep);const nm=`${fmt(dep.dep)} ${kind}`;
+ $('miss').innerHTML=`<li>${nxt?t('missTrain',esc(nm),fmt(nxt.dep),lateTxt(arrFor(nxt,k),arrive?T:end)):t('missNone',esc(nm))}</li>`+(A.walkOnly?'':A.legs.filter(l=>l.k!=='walk').map(l=>`<li>${t('missLeg',esc(l.name),l.iv,preWait>=l.iv?`<span class="ok">${t('onTime')}</span>`:`<span class="risk">${t('late',mins(l.iv-preWait))}</span>`)}</li>`).join(''));
+ fillEnds();
+ function fillEnds(){const f=deps[0],l=deps[deps.length-1];$('ends').innerHTML=`<li class="lv"><span>${t('firstLeave')}</span><b>${fmt(leaveFor(f,k))}</b></li><li>${t('lastTxt',esc(kind+' '+f.cls+' '+fmt(f.dep)),fmt(arrFor(f,k)))}</li><li class="lv"><span>${t('lastLeave')}</span><b class="risk">${fmt(leaveFor(l,k))}</b></li><li>${t('lastTxt',esc(kind+' '+l.cls+' '+fmt(l.dep)),fmt(arrFor(l,k)))}</li>`}
+}
+function bindI(T){const o=$('iopts');if(o)o.onclick=e=>{const b=e.target.closest('button');if(b){S.pick=b.dataset.w;save();run()}}}
+// ---------- main ----------
+let busy=false;
+async function run(){
+ if(!S.from||!S.to)return blank(t('pickBoth'));
+ if(busy)return;busy=true;$('go').disabled=true;blank(t('searching'),1);
+ const T0=hm(S.time),T=T0<180&&S.mode==='arrive'?T0+1440:T0;
+ try{if(km(S.from,S.to)>35)await runInter(T);else await runCity(T)}
+ catch(e){console.error(e);blank(esc(e.message||String(e)))}
+ finally{busy=false;$('go').disabled=false}
+}
+function applyLang(){
+ document.documentElement.lang=S.lang;
+ for(const e of document.querySelectorAll('[data-i]'))e.textContent=t(e.dataset.i);
+ $('lvlhint').textContent=t('h_'+S.lvl);$('tlab').textContent=S.mode==='arrive'?t('arriveLab'):t('leaveLab');$('how').innerHTML=t('how');
+ for(const g of ['mode','lvl','lang'])for(const x of document.querySelectorAll('#'+g+' button'))x.setAttribute('aria-pressed',x.dataset.v===S[g]);
+ placeBox('from');placeBox('to');renderFavs();showQuota();
+}
+for(const w of ['from','to'])$(w+'Box').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;const a=b.dataset.a;
+ if(a==='find')find(w);else if(a==='pick'){S[w]=cands[w][+b.dataset.i];cands[w]=null;save();placeBox(w)}
+ else if(a==='clr'){S[w]=null;save();placeBox(w);$(w+'Q')?.focus()}
+ else if(a==='fav'){const p=S[w];if(!S.favs.some(f=>f.name===p.name&&f.city===p.city)){S.favs.push(p);S.favs=S.favs.slice(-8);save();renderFavs()}}});
+for(const w of ['from','to'])$(w+'Box').addEventListener('keydown',e=>{if(e.key==='Enter'&&e.target.id===w+'Q'){e.preventDefault();find(w)}});
+$('favs').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;const f=S.favs[+b.dataset.i];if(!S.from)S.from=f;else S.to=f;save();placeBox('from');placeBox('to')});
+$('favs').addEventListener('contextmenu',e=>{const b=e.target.closest('button');if(!b)return;e.preventDefault();S.favs.splice(+b.dataset.i,1);save();renderFavs()});
+for(const g of ['mode','lvl','lang'])$(g).addEventListener('click',e=>{const x=e.target.closest('button');if(!x)return;S[g]=x.dataset.v;save();applyLang();if(g!=='lang'&&$('res').querySelector('.big'))run()});
+$('time').addEventListener('change',e=>{if(e.target.value){S.time=e.target.value;save()}});
+$('date').addEventListener('change',e=>{if(e.target.value){S.date=e.target.value;save()}});
+$('f').addEventListener('submit',e=>{e.preventDefault();S.cityOpt=0;run()});
+$('time').value=S.time;$('date').value=S.date;
+applyLang();
+if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(()=>{});
+}
+</script>
+</body>
+</html>

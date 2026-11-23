@@ -310,7 +310,9 @@ async function runInter(T){
  const lv=LV[S.lvl],arrive=S.mode==='arrive';
  const j=await api('searchPubTransPathT',{SX:S.from.x,SY:S.from.y,EX:S.to.x,EY:S.to.y,SearchType:1},20);
  const ps=j.result?.path||[];
- const pick=type=>ps.filter(p=>p.pathType===type&&p.subPath?.length===1).sort((a,b)=>a.info.totalTime-b.info.totalTime)[0];
+ // Rank by ride time plus a rough estimate of getting to/from the station (about 4 min per km + 5), so a nearer station wins over a slightly faster train.
+ const est=p=>{const q=p.subPath[0];return p.info.totalTime+5+4*km(S.from,{x:+q.startX,y:+q.startY})+5+4*km({x:+q.endX,y:+q.endY},S.to)};
+ const pick=type=>ps.filter(p=>p.pathType===type&&p.subPath?.length===1).sort((a,b)=>est(a)-est(b))[0];
  const choices={train:pick(11),bus:pick(12)};
  if(!choices.train&&!choices.bus)return runCity(T);
  let which=choices[S.pick]?S.pick:(choices.train?'train':'bus');

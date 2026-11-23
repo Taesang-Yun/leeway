@@ -144,7 +144,7 @@ ko:{h1:'진짜 몇 시에 나가야 할까?',sub:'지도 앱은 정류장에 도
  ride:(a,b,n)=>`${a} → ${b}, ${n}`,toStation:s=>`${s}까지 이동`,fromStation:s=>`${s}에서 목적지까지`,atStation:(s,n)=>`${s} 도착, 승강장·탑승구까지 여유 ${n}`,exitStation:n=>`하차 후 역·터미널 빠져나오기 ${n}`,
  train:'열차',xbus:'고속버스',ibus:'시외버스',bus:'버스',subway:'지하철',
  lvLeave:t=>t+' 출발',lvArrive:t=>t+' 도착',onTime:'정시',early:n=>`${n} 일찍`,late:n=>`${n} 지각`,
- missLeg:(nm,iv,res)=>`${nm} (${iv}분 간격)을 놓치면 → ${res}`,missTrain:(nm,nd,res)=>`${nm}을 놓치면 → 다음 차 ${nd}, ${res}`,missNone:nm=>`${nm}을 놓치면 <span class="risk">오늘은 더 이상 차가 없어요</span>`,
+ missLeg:(nm,iv,res)=>`${nm} (${iv}분 간격)을 놓치면 → ${res}`,missTrain:(nm,nd,res)=>`${nm}를 놓치면 → 가장 빨리 도착하는 다음 차 ${nd}, ${res}`,missNone:nm=>`${nm}를 놓치면 <span class="risk">오늘은 더 이상 차가 없어요</span>`,
  firstLeave:'첫차 타려면 출발',lastLeave:'막차 타려면 늦어도',lastTxt:(c,t)=>`${c} 탑승, ${t}쯤 도착.`,cityEnds:'도시 안 지하철·버스의 첫차·막차는 다음 버전에서 추가할게요.',
  noRoute:'경로를 찾지 못했어요.',noTrain:'고른 시각에 맞는 차편이 없어요. 시각이나 날짜를 바꿔보세요.',apiErr:m=>'ODsay 오류: '+m,netErr:'연결에 실패했어요. 인터넷 연결을 확인해 주세요.',
  nextDeps:'다른 차편',optTrain:'기차',optBus:'고속·시외버스',moreBus:'고속·시외버스도 보기',city:'도시 안',inter:'도시 간'},
@@ -163,7 +163,7 @@ en:{h1:'When should you really leave?',sub:"Map apps assume your bus arrives the
  ride:(a,b,n)=>`${a} → ${b}, ${n}`,toStation:s=>`Get to ${s}`,fromStation:s=>`From ${s} to your destination`,atStation:(s,n)=>`At ${s}, ${n} to reach the platform/gate`,exitStation:n=>`Get out of the station ${n}`,
  train:'Train',xbus:'Express bus',ibus:'Intercity bus',bus:'Bus',subway:'Subway',
  lvLeave:t=>'leave '+t,lvArrive:t=>'arrive '+t,onTime:'on time',early:n=>`${n} early`,late:n=>`${n} late`,
- missLeg:(nm,iv,res)=>`Miss ${nm} (every ${iv} min) → ${res}`,missTrain:(nm,nd,res)=>`Miss the ${nm} → next at ${nd}, ${res}`,missNone:nm=>`Miss the ${nm} → <span class="risk">no more service today</span>`,
+ missLeg:(nm,iv,res)=>`Miss ${nm} (every ${iv} min) → ${res}`,missTrain:(nm,nd,res)=>`Miss the ${nm} → fastest next one leaves ${nd}, ${res}`,missNone:nm=>`Miss the ${nm} → <span class="risk">no more service today</span>`,
  firstLeave:'First service: leave',lastLeave:'Last service: leave by',lastTxt:(c,t)=>`Take the ${c}, arrive around ${t}.`,cityEnds:'First/last trains for city subway and buses are coming in the next version.',
  noRoute:'No route found.',noTrain:'No service fits that time. Try another time or date.',apiErr:m=>'ODsay error: '+m,netErr:'Connection failed. Check your internet connection.',
  nextDeps:'Other departures',optTrain:'Train',optBus:'Express/intercity bus',moreBus:'Also check buses',city:'City',inter:'Intercity'}};
@@ -348,7 +348,7 @@ async function runInter(T){
  <p class="hint" style="margin-top:14px">${t('nextDeps')}: ${deps.filter(d=>Math.abs(d.dep-dep.dep)<=120&&d!==dep).slice(0,6).map(d=>`${esc(d.cls)} ${fmt(d.dep)}→${fmt(d.arr)}`).join(' · ')}</p>`;
  bindI(T);
  $('levels').innerHTML=[[t('perfect'),pfDep,'']].concat(Object.keys(LV).map(x=>[t(x),arrive?chooseArrive(x):chooseLeave(x),x])).map(([n,d,x])=>{let v='—';if(d){if(x==='')v=arrive?t('lvLeave',fmt(d.dep-A.perfect)):t('lvArrive',fmt(d.arr+B.perfect));else v=arrive?t('lvLeave',fmt(leaveFor(d,x))):t('lvArrive',fmt(arrFor(d,x)))}return `<li class="lv${x===S.lvl?' on':''}"><span>${n}</span><b>${v}</b></li>`}).join('');
- const nxt=deps.find(d=>d.dep>dep.dep);const nm=`${fmt(dep.dep)} ${kind}`;
+ const nxt=deps.filter(d=>d.dep>dep.dep).sort((a,b)=>a.arr-b.arr)[0];const nm=`${fmt(dep.dep)} ${kind}`;
  $('miss').innerHTML=`<li>${nxt?t('missTrain',esc(nm),fmt(nxt.dep),lateTxt(arrFor(nxt,k),arrive?T:end)):t('missNone',esc(nm))}</li>`+(A.walkOnly?'':A.legs.filter(l=>l.k!=='walk').map(l=>`<li>${t('missLeg',esc(l.name),l.iv,preWait>=l.iv?`<span class="ok">${t('onTime')}</span>`:`<span class="risk">${t('late',mins(l.iv-preWait))}</span>`)}</li>`).join(''));
  fillEnds();
  function fillEnds(){const f=deps[0],l=deps[deps.length-1];$('ends').innerHTML=`<li class="lv"><span>${t('firstLeave')}</span><b>${fmt(leaveFor(f,k))}</b></li><li>${t('lastTxt',esc(kind+' '+f.cls+' '+fmt(f.dep)),fmt(arrFor(f,k)))}</li><li class="lv"><span>${t('lastLeave')}</span><b class="risk">${fmt(leaveFor(l,k))}</b></li><li>${t('lastTxt',esc(kind+' '+l.cls+' '+fmt(l.dep)),fmt(arrFor(l,k)))}</li>`}

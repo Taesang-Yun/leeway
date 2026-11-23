@@ -216,12 +216,12 @@ async function osm(v,near){
  const photon=async qq=>{const u=new URL('https://photon.komoot.io/api/');u.searchParams.set('q',qq);u.searchParams.set('limit','8');if(near){u.searchParams.set('lat',near.y);u.searchParams.set('lon',near.x)}
   const j=await (await fetch(u)).json();for(const f of j.features||[]){const p=f.properties||{};if(p.countrycode&&p.countrycode!=='KR')continue;add(p.name||p.street,f.geometry.coordinates[0],f.geometry.coordinates[1],[p.district||p.locality,p.city||p.state].filter(Boolean).join(' · '))}};
  const nomi=async qq=>{const u=new URL('https://nominatim.openstreetmap.org/search');for(const [k,x] of Object.entries({format:'jsonv2',countrycodes:'kr','accept-language':S.lang,limit:'6',q:qq}))u.searchParams.set(k,x);
-  const j=await (await fetch(u)).json();for(const r of j||[]){const parts=String(r.display_name||'').split(',').map(x=>x.trim());add(r.name||parts[0],r.lon,r.lat,parts.slice(1,4).reverse().filter(x=>!/^\d+$/.test(x)).slice(-2).join(' · '))}};
+  const j=await (await fetch(u)).json();for(const r of j||[]){const parts=String(r.display_name||'').split(',').map(x=>x.trim());add(r.name||parts[0],r.lon,r.lat,parts.slice(1).filter(x=>!/^\d+$/.test(x)&&!/대한민국|South Korea/.test(x)).slice(-2).join(' · '))}};
  const words=v.split(/\s+/).filter(Boolean);
  try{await photon(v)}catch(e){}
  if(out.length<3)try{await nomi(v)}catch(e){}
  if(out.length<3&&words.length>1){const last=words[words.length-1];try{await photon(last)}catch(e){}try{await nomi(last+' '+words.slice(0,-1).join(' ').replace(/카이스트/g,'대전'))}catch(e){}}
- const seen=new Set();return out.filter(o=>{const k=o.name+'|'+o.x.toFixed(3)+o.y.toFixed(3);if(seen.has(k))return false;seen.add(k);return true});
+ const keep=[];for(const o of out)if(!keep.some(k=>km(k,o)<0.12))keep.push(o);return keep;
 }
 async function find(which){
  const v=$(which+'Q').value.trim();q[which]=v;if(!v)return;

@@ -221,7 +221,7 @@ async function osm(v,near){
  try{await photon(v)}catch(e){}
  if(out.length<3)try{await nomi(v)}catch(e){}
  if(out.length<3&&words.length>1){const last=words[words.length-1];try{await photon(last)}catch(e){}try{await nomi(last+' '+words.slice(0,-1).join(' ').replace(/카이스트/g,'대전'))}catch(e){}}
- const keep=[];for(const o of out)if(!keep.some(k=>km(k,o)<0.12))keep.push(o);return keep;
+ const keep=[],ko=x=>/[가-힣]/.test(x.name+x.city);for(const o of out){const i=keep.findIndex(k=>km(k,o)<0.12);if(i<0)keep.push(o);else if(S.lang==='ko'&&ko(o)&&!ko(keep[i]))keep[i]=o}return keep;
 }
 async function find(which){
  const v=$(which+'Q').value.trim();q[which]=v;if(!v)return;

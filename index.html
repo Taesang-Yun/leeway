@@ -155,7 +155,7 @@ ko:{h1:'진짜 몇 시에 나가야 할까?',sub:'지도 앱은 정류장에 도
  lvLeave:t=>t+' 출발',lvArrive:t=>t+' 도착',onTime:'정시',early:n=>`${n} 일찍`,late:n=>`${n} 지각`,
  missLeg:(nm,iv,res)=>`${nm} (${iv}분 간격)을 놓치면 → ${res}`,missTrain:(nm,nd,res)=>`${nm}을(를) 놓치면 → 가장 빨리 도착하는 다음 차 ${nd}, ${res}`,missNone:nm=>`${nm}을(를) 놓치면 <span class="risk">오늘은 더 이상 차가 없어요</span>`,
  firstLeave:'첫차 타려면 출발',lastLeave:'막차 타려면 늦어도',lastTxt:(c,t)=>`${c} 탑승, ${t}쯤 도착.`,cityEnds:'도시 안 지하철·버스의 첫차·막차는 다음 버전에서 추가할게요.',
- whyTitle:'이렇게 계산했어요',whyBack:'도착 시각에서 거꾸로 하나씩 빼봤어요.',whyFwd:'출발 시각부터 하나씩 더해봤어요.',
+ whyTitle:'이렇게 계산했어요',cut_pre:n=>`미리 도착 ${n}`,cut_gap:n=>`남는 시간 ${n} (다음 차는 늦어서 앞 차를 타요)`,cut_delay:n=>`지연 여유 ${n}`,cut_wait:n=>`배차 대기 ${n}`,whyBack:'도착 시각에서 거꾸로 하나씩 빼봤어요.',whyFwd:'출발 시각부터 하나씩 더해봤어요.',
  wGoal:(T,p)=>`<b>${T}</b>까지 ${p} 도착이 목표`,wStart:(T,p)=>`${p}에서 <b>${T}</b>에 출발`,
  wWalk:(a,b,n)=>a===b?`${a}에서 갈아타러 걸어서 ${n}`:`${a} → ${b} 걸어서 ${n}`,wAccess:(a,b,n)=>`${a} → ${b} 약 ${n} (버스·지하철 기다리는 시간 포함)`,
  wRideT:(nm,a,b,r,db,d,src,nd)=>`<b>${nm}</b> ${a} → ${b} ${r}, 지연 여유 ${db}를 더하면 <b>${d} 출발</b> 차가 늦지 않는 마지막 차예요 (${src})${nd?`. 다음 차 ${nd}는 늦어요`:''}`,
@@ -188,7 +188,7 @@ en:{h1:'When should you really leave?',sub:"Map apps assume your bus arrives the
  lvLeave:t=>'leave '+t,lvArrive:t=>'arrive '+t,onTime:'on time',early:n=>`${n} early`,late:n=>`${n} late`,
  missLeg:(nm,iv,res)=>`Miss ${nm} (every ${iv} min) → ${res}`,missTrain:(nm,nd,res)=>`Miss the ${nm} → fastest next one leaves ${nd}, ${res}`,missNone:nm=>`Miss the ${nm} → <span class="risk">no more service today</span>`,
  firstLeave:'First service: leave',lastLeave:'Last service: leave by',lastTxt:(c,t)=>`Take the ${c}, arrive around ${t}.`,cityEnds:'First/last trains for city subway and buses are coming in the next version.',
- whyTitle:'How we got this time',whyBack:'Working backwards from your arrival time, one step at a time.',whyFwd:'Adding up each step from when you leave.',
+ whyTitle:'How we got this time',cut_pre:n=>`be early ${n}`,cut_gap:n=>`spare ${n} (the next one is too late, so take the earlier one)`,cut_delay:n=>`delay cushion ${n}`,cut_wait:n=>`headway wait ${n}`,whyBack:'Working backwards from your arrival time, one step at a time.',whyFwd:'Adding up each step from when you leave.',
  wGoal:(T,p)=>`Goal: reach ${p} by <b>${T}</b>`,wStart:(T,p)=>`Leave ${p} at <b>${T}</b>`,
  wWalk:(a,b,n)=>a===b?`Walk to change at ${a}, ${n}`:`Walk ${a} → ${b}, ${n}`,wAccess:(a,b,n)=>`${a} → ${b}, about ${n} (including waits for buses/subway)`,
  wRideT:(nm,a,b,r,db,d,src,nd)=>`<b>${nm}</b> ${a} → ${b} takes ${r}; with a ${db} delay cushion, the <b>${d} departure</b> is the last one that still works (${src})${nd?`. The next one at ${nd} is too late`:''}`,
@@ -340,9 +340,9 @@ function planBack(legs,T,lv,ends={start:'',end:''}){
   if(l.deps){const c=l.deps.filter(d=>d+l.min+db<=m);if(!c.length)return null;let d=c[c.length-1];if(lv.proof&&c.length>1)d=c[c.length-2];
    const nd=l.deps.find(x=>x>d);
    why.push({t:d,x:t('wRideT',esc(l.name),esc(l.from),esc(l.to),mins(l.min),mins(db),fmt(d),l.sched==='term'?t('wSrcTerm'):t('wSrcReal'),nd!=null?fmt(nd):null)});
-   segs.unshift({k:'ride',min:l.min,l,at:d},{k:'cush',min:m-d-l.min});segs.unshift({k:'cush',min:pre});m=d-pre;
+   segs.unshift({k:'ride',min:l.min,l,at:d},{k:'cush',min:db,tag:'delay'},{k:'cush',min:m-d-l.min-db,tag:'gap'});segs.unshift({k:'cush',min:pre,tag:'pre'});m=d-pre;
    why.push({t:m,x:t('wEarly',esc(l.from),mins(pre),preWhy(lv,i===firstT,l.sched==='term'))});}
-  else{const w=Math.round(l.iv*lv.wf)+(i===pi?l.iv:0);segs.unshift({k:'cush',min:w+pre},{k:'ride',min:l.min,l},{k:'cush',min:db});
+  else{const w=Math.round(l.iv*lv.wf)+(i===pi?l.iv:0);segs.unshift({k:'cush',min:w,tag:'wait'},{k:'cush',min:pre,tag:'pre'},{k:'ride',min:l.min,l},{k:'cush',min:db,tag:'delay'});
    m-=l.min+db;why.push({t:m,x:t('wRideI',esc(l.name),esc(l.from),esc(l.to),mins(l.min),mins(db))});
    m-=w+pre;why.push({t:m,x:t('wWaitI',esc(l.name),l.iv,l.ivKnown===false,mins(w),mins(pre),preWhy(lv,i===firstT,false))});}
  }
@@ -356,8 +356,8 @@ function planFwd(legs,T,lv,from=0,after=null,ends={start:'',end:''}){
   if(l.deps){const ready=(i===from&&after!=null)?after+1:c+pre;let k=l.deps.findIndex(d=>d>=ready);if(k>=0&&lv.proof&&!(i===from&&after!=null))k++;if(k<0||k>=l.deps.length)return null;const d=l.deps[k];
    why.push({t:ready,x:t('wEarly',esc(l.from),mins(pre),preWhy(lv,i===firstT,l.sched==='term'))});
    why.push({t:d,x:t('wRideF',esc(l.name),fmt(d),l.sched==='term'?t('wSrcTerm'):t('wSrcReal'))});
-   segs.push({k:'cush',min:d-c},{k:'ride',min:l.min,l,at:d},{k:'cush',min:db});c=d+l.min+db;why.push({t:c,x:t('wRideI',esc(l.name),esc(l.from),esc(l.to),mins(l.min),mins(db))})}
-  else{const w=Math.round(l.iv*lv.wf)+(i===pi?l.iv:0)+(i===from&&after!=null?l.iv:0);segs.push({k:'cush',min:w+pre},{k:'ride',min:l.min,l},{k:'cush',min:db});
+   segs.push({k:'cush',min:pre,tag:'pre'},{k:'cush',min:d-c-pre,tag:'gap'},{k:'ride',min:l.min,l,at:d},{k:'cush',min:db,tag:'delay'});c=d+l.min+db;why.push({t:c,x:t('wRideI',esc(l.name),esc(l.from),esc(l.to),mins(l.min),mins(db))})}
+  else{const w=Math.round(l.iv*lv.wf)+(i===pi?l.iv:0)+(i===from&&after!=null?l.iv:0);segs.push({k:'cush',min:w,tag:'wait'},{k:'cush',min:pre,tag:'pre'},{k:'ride',min:l.min,l},{k:'cush',min:db,tag:'delay'});
    c+=w+pre;why.push({t:c,x:t('wWaitI',esc(l.name),l.iv,l.ivKnown===false,mins(w),mins(pre),preWhy(lv,i===firstT,false))});
    c+=l.min+db;why.push({t:c,x:t('wRideI',esc(l.name),esc(l.from),esc(l.to),mins(l.min),mins(db))})}
  }
@@ -399,9 +399,9 @@ function stripHtml(segs,start,end){
 }
 function stepsHtml(segs,start){
  let c=start;const rows=[];let pend=0;
- const flush=()=>{if(pend>0)rows.push(`<li><time></time><span class="c">${t('wait',mins(pend))}</span></li>`);pend=0};
+ let parts={};const flush=()=>{if(pend>0){const ks=Object.keys(parts).filter(k=>parts[k]>0);const lab=ks.length&&!ks.includes('x')?ks.map(k=>t('cut_'+k,mins(parts[k]))).join(' · '):t('wait',mins(pend));rows.push(`<li><time></time><span class="c">${lab}</span></li>`)}pend=0;parts={}};
  for(const s of segs){
-  if(s.k==='cush'){pend+=s.min;c+=s.min;continue}flush();
+  if(s.k==='cush'){pend+=s.min;c+=s.min;const g=s.tag||'x';parts[g]=(parts[g]||0)+s.min;continue}flush();
   if(s.k==='walk')rows.push(`<li><time>${fmt(c)}</time><span>${esc(s.text||t('walk',mins(s.min)))}</span></li>`);
   else if(s.k==='note')rows.push(`<li><time>${s.at!=null?fmt(s.at):''}</time><span>${s.html}</span></li>`);
   else{const l=s.l;rows.push(`<li><time>${fmt(s.at??c)}</time><span><span class="dot" style="background:${l.color}">${esc(l.name)}</span>${esc(t('ride',l.from,l.to,mins(s.min)))}<br><small>${l.sched==='subway'?t('schedSub'):l.sched==='term'?t('schedTerm',fmt(clock(l.first)),l.iv):l.iv?t('every',l.iv)+(l.ivKnown===false?' · '+t('noIv'):''):''}${l.extra||''}</small></span></li>`)}

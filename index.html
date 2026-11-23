@@ -82,6 +82,9 @@ h2{font-size:20px;margin:0 0 4px}.card>p{margin:0 0 14px;color:var(--mute);font-
 .how{font-size:14px;color:var(--mute);max-width:80ch;margin:28px 0 0}.how b{color:var(--ink)}
 .spin{display:inline-block;width:16px;height:16px;border:2px solid #ffffff55;border-top-color:var(--lime);border-radius:50%;animation:sp 1s linear infinite;vertical-align:-3px;margin-right:8px}
 @keyframes sp{to{transform:rotate(1turn)}}
+.one{font-size:18px;font-weight:600;margin:0 0 6px}.one small{display:block;font-weight:400;font-size:15px;opacity:.8;margin-top:2px}
+.moreBtn{margin-top:14px;background:transparent;border:1px solid #ffffff44;color:var(--bandink);border-radius:999px;padding:8px 16px;font:500 14px Inter,"Noto Sans KR",sans-serif;cursor:pointer;min-height:40px}
+body:not(.more) .more,body:not(.more) main{display:none}
 @media(max-width:900px){.grid,.cols{grid-template-columns:minmax(0,1fr)}}
 @media(max-width:600px){.steps li{grid-template-columns:5.2em minmax(0,1fr)}}
 @media(prefers-reduced-motion:reduce){.spin{animation:none}}
@@ -146,7 +149,7 @@ ko:{h1:'진짜 몇 시에 나가야 할까?',sub:'지도 앱은 정류장에 도
  lvLeave:t=>t+' 출발',lvArrive:t=>t+' 도착',onTime:'정시',early:n=>`${n} 일찍`,late:n=>`${n} 지각`,
  missLeg:(nm,iv,res)=>`${nm} (${iv}분 간격)을 놓치면 → ${res}`,missTrain:(nm,nd,res)=>`${nm}을(를) 놓치면 → 가장 빨리 도착하는 다음 차 ${nd}, ${res}`,missNone:nm=>`${nm}을(를) 놓치면 <span class="risk">오늘은 더 이상 차가 없어요</span>`,
  firstLeave:'첫차 타려면 출발',lastLeave:'막차 타려면 늦어도',lastTxt:(c,t)=>`${c} 탑승, ${t}쯤 도착.`,cityEnds:'도시 안 지하철·버스의 첫차·막차는 다음 버전에서 추가할게요.',
- noRoute:'경로를 찾지 못했어요.',noService:'이 시각에는 운행하는 차가 없어요. 첫차 전이거나 막차 후일 수 있어요.',schedSub:'실제 시간표 기준',schedTerm:(f,iv)=>`기점 출발 · 첫차 ${f}부터 약 ${iv}분 간격 (추정 시간표)`,cityEndsNote:'지하철은 실제 시간표, 기점 버스는 첫차·배차간격 기준이에요. 중간 정류장에서 타는 버스의 막차는 아직 반영하지 않아요.',noTrain:'고른 시각에 맞는 차편이 없어요. 시각이나 날짜를 바꿔보세요.',apiErr:m=>'ODsay 오류: '+m,netErr:'연결에 실패했어요. 인터넷 연결을 확인해 주세요.',
+ noRoute:'경로를 찾지 못했어요.',boardAt:(t2,st)=>`${t2} ${st}에서 탑승 · `,arriveBy2:t2=>`${t2}까지 도착`,arriveAt2:t2=>`${t2}쯤 도착`,more:'자세히 보기',less:'간단히 보기',noService:'이 시각에는 운행하는 차가 없어요. 첫차 전이거나 막차 후일 수 있어요.',schedSub:'실제 시간표 기준',schedTerm:(f,iv)=>`기점 출발 · 첫차 ${f}부터 약 ${iv}분 간격 (추정 시간표)`,cityEndsNote:'지하철은 실제 시간표, 기점 버스는 첫차·배차간격 기준이에요. 중간 정류장에서 타는 버스의 막차는 아직 반영하지 않아요.',noTrain:'고른 시각에 맞는 차편이 없어요. 시각이나 날짜를 바꿔보세요.',apiErr:m=>'ODsay 오류: '+m,netErr:'연결에 실패했어요. 인터넷 연결을 확인해 주세요.',
  nextDeps:'다른 차편',optTrain:'기차',optBus:'고속·시외버스',moreBus:'고속·시외버스도 보기',city:'도시 안',inter:'도시 간'},
 en:{h1:'When should you really leave?',sub:"Map apps assume your bus arrives the moment you reach the stop. Leeway accounts for headways, transfers, delays and last trains, and tells you when to leave so you're not late.",
  from:'From',to:'To',ph:'Place, building or station',find:'Search',change:'Change',saveFav:'★ Save',planby:'Plan by',arriveBy:'Arrive by',leaveAt:'Leave at',date:'Date',
@@ -165,7 +168,7 @@ en:{h1:'When should you really leave?',sub:"Map apps assume your bus arrives the
  lvLeave:t=>'leave '+t,lvArrive:t=>'arrive '+t,onTime:'on time',early:n=>`${n} early`,late:n=>`${n} late`,
  missLeg:(nm,iv,res)=>`Miss ${nm} (every ${iv} min) → ${res}`,missTrain:(nm,nd,res)=>`Miss the ${nm} → fastest next one leaves ${nd}, ${res}`,missNone:nm=>`Miss the ${nm} → <span class="risk">no more service today</span>`,
  firstLeave:'First service: leave',lastLeave:'Last service: leave by',lastTxt:(c,t)=>`Take the ${c}, arrive around ${t}.`,cityEnds:'First/last trains for city subway and buses are coming in the next version.',
- noRoute:'No route found.',noService:'Nothing runs at that time. It may be before the first or after the last service.',schedSub:'real timetable',schedTerm:(f,iv)=>`starts here · first at ${f}, about every ${iv} min (estimated timetable)`,cityEndsNote:'Subway uses real timetables; buses from their terminus use first-bus time and headway. Last buses at mid-route stops are not included yet.',noTrain:'No service fits that time. Try another time or date.',apiErr:m=>'ODsay error: '+m,netErr:'Connection failed. Check your internet connection.',
+ noRoute:'No route found.',boardAt:(t2,st)=>`Board at ${t2} at ${st} · `,arriveBy2:t2=>`there by ${t2}`,arriveAt2:t2=>`arrive around ${t2}`,more:'Show details',less:'Hide details',noService:'Nothing runs at that time. It may be before the first or after the last service.',schedSub:'real timetable',schedTerm:(f,iv)=>`starts here · first at ${f}, about every ${iv} min (estimated timetable)`,cityEndsNote:'Subway uses real timetables; buses from their terminus use first-bus time and headway. Last buses at mid-route stops are not included yet.',noTrain:'No service fits that time. Try another time or date.',apiErr:m=>'ODsay error: '+m,netErr:'Connection failed. Check your internet connection.',
  nextDeps:'Other departures',optTrain:'Train',optBus:'Express/intercity bus',moreBus:'Also check buses',city:'City',inter:'Intercity'}};
 const LV={relaxed:{wf:.5,pct:0,min:0,xfer:0,board:1,st:5,exit:2,tc:0},standard:{wf:1,pct:.15,min:2,xfer:2,board:2,st:10,exit:5,tc:2},cautious:{wf:1,pct:.3,min:4,xfer:4,board:3,st:15,exit:8,tc:4,proof:1}};
 const $=id=>document.getElementById(id);
@@ -355,6 +358,13 @@ function stepsHtml(segs,start){
  }
  flush();return `<ol class="steps">${rows.join('')}</ol>`;
 }
+function oneLine(segs,arr,arrive){
+ const rides=segs.filter(x=>x.k==='ride');if(!rides.length)return '';
+ const f=rides[0],names=rides.map(r=>esc(r.l.short&&r.l.name.length>14?r.l.short:r.l.name)).join(' → ');
+ return `<p class="one">${names}<small>${f.at!=null?t('boardAt',fmt(f.at),esc(f.l.from)):''}${arrive?t('arriveBy2',fmt(arr)):t('arriveAt2',fmt(arr))}</small></p>`;
+}
+const moreBtn=()=>`<button type="button" class="moreBtn" id="moreBtn">${document.body.classList.contains('more')?t('less'):t('more')}</button>`;
+document.addEventListener('click',e=>{if(e.target.id==='moreBtn'){S.more=!S.more;save();document.body.classList.toggle('more',!!S.more);e.target.textContent=S.more?t('less'):t('more')}});
 const blank=(m,spin)=>{$('res').innerHTML=`<div class="none"><p class="lead">${spin?'<span class="spin"></span>':''}${m}</p></div>`};
 // ---------- city ----------
 async function runCity(T){
@@ -364,6 +374,8 @@ async function runCity(T){
  const plan=(legs,L)=>arrive?planBack(legs,T,L):planFwd(legs,T,L);
  let opts=paths.map(p=>{const legs=cityLegs(p);return{p,legs,pl:plan(legs,lv)||{leave:-1e9,arrive:1e9,segs:[],dur:0},pf:perfectCity(p,legs)}});
  opts.sort((a,b)=>arrive?b.pl.leave-a.pl.leave:a.pl.arrive-b.pl.arrive);
+ // Load timetables for the two best candidates and let the real times decide, unless the person picked one.
+ if(S.cityOpt==null){for(const o of opts.slice(0,2)){await attachSched(o.legs,S.date);o.pl=plan(o.legs,lv)||{leave:-1e9,arrive:1e9,segs:[],dur:0}}opts.sort((a,b)=>arrive?b.pl.leave-a.pl.leave:a.pl.arrive-b.pl.arrive)}
  const sel=opts[Math.min(S.cityOpt||0,opts.length-1)];
  await attachSched(sel.legs,S.date);
  const pl=plan(sel.legs,lv);
@@ -373,8 +385,9 @@ async function runCity(T){
  if(!pl){$('res').innerHTML=optBar+`<div class="none"><p class="lead">${t('noService')}</p></div>`;bindO();$('levels').innerHTML=$('miss').innerHTML='<li>—</li>';cityEnds(sel.legs,lv);return}
  const perfect=arrive?T-sel.pf:T+sel.pf;
  $('res').innerHTML=`<p class="lead">${arrive?t('leaveBy'):t('arriveAround')}</p><div class="big">${fmt(arrive?pl.leave:pl.arrive)}</div>
- <div class="cmp"><span>${t('perfect')}: <b>${fmt(perfect)}</b></span><span>${t('extra')} <b>${mins(pl.dur-sel.pf)}</b></span><span>${t('d2d')} <b>${mins(pl.dur)}</b></span></div>
- ${optBar}${stripHtml(pl.segs,pl.leave,pl.arrive)}${stepsHtml(pl.segs,pl.leave)}`;
+ ${oneLine(pl.segs,pl.arrive,arrive)}${moreBtn()}
+ <div class="more" style="margin-top:18px"><div class="cmp"><span>${t('perfect')}: <b>${fmt(perfect)}</b></span><span>${t('extra')} <b>${mins(pl.dur-sel.pf)}</b></span><span>${t('d2d')} <b>${mins(pl.dur)}</b></span></div>
+ ${optBar}${stripHtml(pl.segs,pl.leave,pl.arrive)}${stepsHtml(pl.segs,pl.leave)}</div>`;
  bindO();
  $('levels').innerHTML=[[t('perfect'),{leave:T-sel.pf,arrive:T+sel.pf},'']].concat(Object.keys(LV).map(k=>[t(k),plan(sel.legs,LV[k]),k])).map(([n,p,k])=>`<li class="lv${k===S.lvl?' on':''}"><span>${n}</span><b>${p?(arrive?t('lvLeave',fmt(p.leave)):t('lvArrive',fmt(p.arrive))):'—'}</b></li>`).join('');
  const goal=arrive?T:pl.arrive,rides=pl.segs.filter(x=>x.k==='ride');
@@ -423,16 +436,16 @@ async function runInter(T){
  const leave=arrive?leaveFor(dep,k):T,end=arrive?T:arrFor(dep,k);
  const accSegs=(X,lab)=>X.walkOnly?[{k:'walk',min:X.legs[0].min,text:lab}]:cityPlan(X.legs,lv).segs;
  const ride=dep.arr-dep.dep,db=Math.round(dBuf(lv,ride)*(tt===4?.5:1));
- const L={name:kind+' '+dep.cls,short:kind,from:st.name,to:en.name,color,iv:0,extra:''};
+ const L={name:dep.cls||kind,short:kind,from:st.name,to:en.name,color,iv:0,extra:''};
  const aS=accSegs(A,t('toStation',st.name)),aDur=aS.reduce((s,x)=>s+x.min,0);
  const preWait=dep.dep-leave-aDur;
  const bS=accSegs(B,t('fromStation',en.name)),bDur=bS.reduce((s,x)=>s+x.min,0);
  const segs=[...aS,{k:'note',min:0,at:leave+aDur,html:esc(t('atStation',st.name,mins(preWait)))},{k:'cush',min:preWait},{k:'ride',min:ride,l:L,at:dep.dep},...(db+lv.exit?[{k:'note',min:0,at:dep.arr,html:esc(t('exitStation',mins(db+lv.exit)))},{k:'cush',min:db+lv.exit}]:[]),...bS];
  const used2=aDur+preWait+ride+db+lv.exit+bDur;if(end-leave>used2)segs.push({k:'cush',min:end-leave-used2});
- $('res').innerHTML=`${optBtns}<p class="lead">${arrive?t('leaveBy'):t('arriveAround')}</p><div class="big">${fmt(arrive?leave:end)}</div>
- <div class="cmp"><span>${t('perfect')}: <b>${pfDep?fmt(arrive?pfDep.dep-A.perfect:pfDep.arr+B.perfect):'—'}</b></span>${arrive&&pfDep?`<span>${t('extra')} <b>${mins(pfDep.dep-A.perfect-leave)}</b></span>`:''}<span>${t('d2d')} <b>${mins(end-leave)}</b></span></div>
+ $('res').innerHTML=`<p class="lead">${arrive?t('leaveBy'):t('arriveAround')}</p><div class="big">${fmt(arrive?leave:end)}</div>
+ ${oneLine(segs,end,arrive)}${moreBtn()}<div class="more" style="margin-top:18px">${optBtns}<div class="cmp"><span>${t('perfect')}: <b>${pfDep?fmt(arrive?pfDep.dep-A.perfect:pfDep.arr+B.perfect):'—'}</b></span>${arrive&&pfDep?`<span>${t('extra')} <b>${mins(pfDep.dep-A.perfect-leave)}</b></span>`:''}<span>${t('d2d')} <b>${mins(end-leave)}</b></span></div>
  ${stripHtml(segs.filter(s=>s.k!=='note'),leave,end)}${stepsHtml(segs,leave)}
- <p class="hint" style="margin-top:14px">${t('nextDeps')}: ${deps.filter(d=>Math.abs(d.dep-dep.dep)<=120&&d!==dep).slice(0,6).map(d=>`${esc(d.cls)} ${fmt(d.dep)}→${fmt(d.arr)}`).join(' · ')}</p>`;
+ <p class="hint" style="margin-top:14px">${t('nextDeps')}: ${deps.filter(d=>Math.abs(d.dep-dep.dep)<=120&&d!==dep).slice(0,6).map(d=>`${esc(d.cls)} ${fmt(d.dep)}→${fmt(d.arr)}`).join(' · ')}</p></div>`;
  bindI(T);
  $('levels').innerHTML=[[t('perfect'),pfDep,'']].concat(Object.keys(LV).map(x=>[t(x),arrive?chooseArrive(x):chooseLeave(x),x])).map(([n,d,x])=>{let v='—';if(d){if(x==='')v=arrive?t('lvLeave',fmt(d.dep-A.perfect)):t('lvArrive',fmt(d.arr+B.perfect));else v=arrive?t('lvLeave',fmt(leaveFor(d,x))):t('lvArrive',fmt(arrFor(d,x)))}return `<li class="lv${x===S.lvl?' on':''}"><span>${n}</span><b>${v}</b></li>`}).join('');
  const nxt=deps.filter(d=>d.dep>dep.dep).sort((a,b)=>a.arr-b.arr)[0];const nm=`${fmt(dep.dep)} ${kind}`;
@@ -468,8 +481,8 @@ $('favs').addEventListener('contextmenu',e=>{const b=e.target.closest('button');
 for(const g of ['mode','lvl','lang'])$(g).addEventListener('click',e=>{const x=e.target.closest('button');if(!x)return;S[g]=x.dataset.v;save();applyLang();if(g!=='lang'&&$('res').querySelector('.big'))run()});
 $('time').addEventListener('change',e=>{if(e.target.value){S.time=e.target.value;save()}});
 $('date').addEventListener('change',e=>{if(e.target.value){S.date=e.target.value;save()}});
-$('f').addEventListener('submit',e=>{e.preventDefault();S.cityOpt=0;run()});
-$('time').value=S.time;$('date').value=S.date;
+$('f').addEventListener('submit',e=>{e.preventDefault();S.cityOpt=null;run()});
+$('time').value=S.time;$('date').value=S.date;document.body.classList.toggle('more',!!S.more);
 applyLang();
 if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(()=>{});
 }

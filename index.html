@@ -130,14 +130,14 @@ h2{font-size:20px;margin:0 0 4px}.card>p{margin:0 0 14px;color:var(--mute);font-
 const KEY='qLkf64lrh/4MZF/oEDmU0DoEp/ATUCnLO8v+kuzuLFs',API='https://api.odsay.com/v1/api/',DAILY=30;
 const I={
 ko:{h1:'진짜 몇 시에 나가야 할까?',sub:'지도 앱은 정류장에 도착하자마자 버스가 온다고 가정해요. Leeway는 배차간격, 환승, 지연, 막차까지 따져서 안 늦는 출발 시각을 알려줘요.',
- from:'출발',to:'도착',ph:'역, 정류장, 터미널 이름',find:'찾기',change:'바꾸기',saveFav:'★ 저장',planby:'기준',arriveBy:'도착 시각',leaveAt:'출발 시각',date:'날짜',
+ from:'출발',to:'도착',ph:'장소, 건물, 역 이름 (예: 카이스트 미르관)',find:'찾기',change:'바꾸기',saveFav:'★ 저장',planby:'기준',arriveBy:'도착 시각',leaveAt:'출발 시각',date:'날짜',
  arriveLab:'이때까지 도착',leaveLab:'이때 출발',careful:'얼마나 여유 있게?',relaxed:'빠듯하게',standard:'보통',cautious:'넉넉하게',
  h_relaxed:'평균만큼만 기다린다고 계산. 지연 여유 없음.',h_standard:'탈 때마다 방금 놓쳤다고 가정(배차간격만큼 대기), 지연 여유 15%, 환승마다 2분.',
  h_cautious:'보통 + 지연 여유 30%, 환승마다 4분, 그리고 하나를 더 놓쳐도 늦지 않게.',
  go:'안 늦는 출발 시각 계산',searching:'찾는 중…',noCand:'결과가 없어요. 다른 이름으로 찾아보세요.',pickBoth:'출발지와 도착지를 골라주세요.',
  quota:(n,m)=>`오늘 검색 ${n}/${m}회 사용 (같은 검색은 저장해 두고 다시 쓰지 않아요)`,quotaOut:'오늘 무료 검색 횟수(30회)를 다 썼어요. 내일 다시 시도해 주세요.',
  cLv:'여유 단계별 비교',cLvSub:'같은 경로에서 늦어도 나가야 하는 시각.',cMiss:'혹시 놓치면?',cMissSub:'탈것을 하나 놓쳤을 때 결과.',cEnds:'첫차와 막차',cEndsSub:'고른 날짜, 이 경로 기준.',
- how:'<b>계산 방법.</b> ODsay 대중교통 데이터로 경로, 배차간격, KTX·고속버스 시간표를 받아와요. 도착 시각에서 거꾸로 계산하면서 기다리는 시간, 지연, 환승, 역에 미리 도착할 시간을 더해요. 실시간 지연과 공휴일 시간표는 아직 반영하지 않아요.',
+ how:'<b>계산 방법.</b> ODsay 대중교통 데이터로 경로, 배차간격, KTX·고속버스 시간표를 받아와요. 도착 시각에서 거꾸로 계산하면서 기다리는 시간, 지연, 환승, 역에 미리 도착할 시간을 더해요. 실시간 지연과 공휴일 시간표는 아직 반영하지 않아요. 장소 검색: © OpenStreetMap 기여자 (Photon, Nominatim).',
  min:n=>n+'분',time:(h,m,pm)=>`${pm?'오후':'오전'} ${h%12||12}:${m}`,
  leaveBy:'집에서 나갈 시각',arriveAround:'이때 도착한다고 생각하세요',perfect:'지도 앱 기준',extra:'추가 여유',d2d:'전체 소요',
  sLeave:t=>'출발 '+t,sArrive:t=>'도착 '+t,walk:n=>`${n} 걷기`,wait:(n)=>`기다림·여유 ${n}`,every:n=>`${n}분 간격`,noIv:'배차 정보 없음(추정)',
@@ -149,14 +149,14 @@ ko:{h1:'진짜 몇 시에 나가야 할까?',sub:'지도 앱은 정류장에 도
  noRoute:'경로를 찾지 못했어요.',noTrain:'고른 시각에 맞는 차편이 없어요. 시각이나 날짜를 바꿔보세요.',apiErr:m=>'ODsay 오류: '+m,netErr:'연결에 실패했어요. 인터넷 연결을 확인해 주세요.',
  nextDeps:'다른 차편',optTrain:'기차',optBus:'고속·시외버스',moreBus:'고속·시외버스도 보기',city:'도시 안',inter:'도시 간'},
 en:{h1:'When should you really leave?',sub:"Map apps assume your bus arrives the moment you reach the stop. Leeway accounts for headways, transfers, delays and last trains, and tells you when to leave so you're not late.",
- from:'From',to:'To',ph:'Station, stop or terminal name',find:'Search',change:'Change',saveFav:'★ Save',planby:'Plan by',arriveBy:'Arrive by',leaveAt:'Leave at',date:'Date',
+ from:'From',to:'To',ph:'Place, building or station',find:'Search',change:'Change',saveFav:'★ Save',planby:'Plan by',arriveBy:'Arrive by',leaveAt:'Leave at',date:'Date',
  arriveLab:'Arrive by',leaveLab:'Leave at',careful:'How careful?',relaxed:'Relaxed',standard:'Standard',cautious:'Cautious',
  h_relaxed:'Average waits only. No delay cushion.',h_standard:'Assumes you just missed every ride (a full headway wait), +15% delay cushion, +2 min per transfer.',
  h_cautious:'Standard + 30% delay cushion, +4 min per transfer, and still on time if you miss one more ride.',
  go:'Find a safe time to leave',searching:'Searching…',noCand:'No results. Try another name.',pickBoth:'Choose a start and a destination.',
  quota:(n,m)=>`Searches today: ${n}/${m} (repeat searches are reused, not re-sent)`,quotaOut:'All 30 free searches for today are used. Try again tomorrow.',
  cLv:'Safety levels compared',cLvSub:'Latest time to leave for the same trip.',cMiss:'If something goes wrong',cMissSub:'What happens if you miss one ride.',cEnds:'First and last service',cEndsSub:'On the chosen date, for this route.',
- how:'<b>How it works.</b> Leeway gets routes, headways and KTX/express-bus timetables from ODsay. It works backwards from your arrival time, adding waiting time, delays, transfers and time to get to the platform. Live delays and holiday timetables are not included yet.',
+ how:'<b>How it works.</b> Leeway gets routes, headways and KTX/express-bus timetables from ODsay. It works backwards from your arrival time, adding waiting time, delays, transfers and time to get to the platform. Live delays and holiday timetables are not included yet. Place search: © OpenStreetMap contributors (Photon, Nominatim).',
  min:n=>n+' min',time:(h,m,pm)=>`${h%12||12}:${m} ${pm?'pm':'am'}`,
  leaveBy:'Leave by',arriveAround:'Plan to arrive by',perfect:'Map-app estimate',extra:'Extra leeway',d2d:'Door to door',
  sLeave:t=>'Leave '+t,sArrive:t=>'Arrive '+t,walk:n=>`Walk ${n}`,wait:n=>`Wait & cushion ${n}`,every:n=>`every ${n} min`,noIv:'no headway data (estimated)',
@@ -206,17 +206,37 @@ const cands={from:null,to:null},q={from:'',to:''};
 function placeBox(which){
  const box=$(which+'Box'),p=S[which];
  if(p){box.innerHTML=`<div class="picked"><span>${esc(p.name)} <small>${esc(p.city||'')}</small></span><span><button type="button" data-a="fav">${t('saveFav')}</button> <button type="button" data-a="clr">${t('change')}</button></span></div>`;return}
- box.innerHTML=`<div class="srch"><input id="${which}Q" placeholder="${t('ph')}" value="${esc(q[which])}"><button type="button" class="btn" data-a="find">${t('find')}</button></div><div class="cands">${cands[which]===null?'':cands[which].length?cands[which].map((c,i)=>`<button type="button" data-a="pick" data-i="${i}">${esc(c.name)} <small>${esc(c.kind)} · ${esc(c.city)}</small></button>`).join(''):`<p class="hint">${t('noCand')}</p>`}</div>`;
+ box.innerHTML=`<div class="srch"><input id="${which}Q" placeholder="${t('ph')}" value="${esc(q[which])}"><button type="button" class="btn" data-a="find">${t('find')}</button></div><div class="cands">${cands[which]===null?'':cands[which].length?cands[which].map((c,i)=>`<button type="button" data-a="pick" data-i="${i}">${esc(c.name)} <small>${esc([c.kind,c.city].filter(Boolean).join(' · '))}</small></button>`).join(''):`<p class="hint">${t('noCand')}</p>`}</div>`;
 }
 const KIND={ko:{1:'버스정류장',2:'지하철역',3:'기차역',4:'고속버스터미널',5:'공항',6:'시외버스터미널'},en:{1:'Bus stop',2:'Subway',3:'Rail station',4:'Express terminal',5:'Airport',6:'Intercity terminal'}};
+// Free place search (OpenStreetMap: Photon + Nominatim) for buildings, campuses and addresses;
+// ODsay station search is added for stations/stops (it uses the daily ODsay quota).
+async function osm(v,near){
+ const out=[],add=(name,x,y,area)=>{if(name&&isFinite(x)&&isFinite(y))out.push({name,x:+x,y:+y,city:area,kind:''})};
+ const photon=async qq=>{const u=new URL('https://photon.komoot.io/api/');u.searchParams.set('q',qq);u.searchParams.set('limit','8');if(near){u.searchParams.set('lat',near.y);u.searchParams.set('lon',near.x)}
+  const j=await (await fetch(u)).json();for(const f of j.features||[]){const p=f.properties||{};if(p.countrycode&&p.countrycode!=='KR')continue;add(p.name||p.street,f.geometry.coordinates[0],f.geometry.coordinates[1],[p.district||p.locality,p.city||p.state].filter(Boolean).join(' · '))}};
+ const nomi=async qq=>{const u=new URL('https://nominatim.openstreetmap.org/search');for(const [k,x] of Object.entries({format:'jsonv2',countrycodes:'kr','accept-language':S.lang,limit:'6',q:qq}))u.searchParams.set(k,x);
+  const j=await (await fetch(u)).json();for(const r of j||[]){const parts=String(r.display_name||'').split(',').map(x=>x.trim());add(r.name||parts[0],r.lon,r.lat,parts.slice(1,4).reverse().filter(x=>!/^\d+$/.test(x)).slice(-2).join(' · '))}};
+ const words=v.split(/\s+/).filter(Boolean);
+ try{await photon(v)}catch(e){}
+ if(out.length<3)try{await nomi(v)}catch(e){}
+ if(out.length<3&&words.length>1){const last=words[words.length-1];try{await photon(last)}catch(e){}try{await nomi(last+' '+words.slice(0,-1).join(' ').replace(/카이스트/g,'대전'))}catch(e){}}
+ const seen=new Set();return out.filter(o=>{const k=o.name+'|'+o.x.toFixed(3)+o.y.toFixed(3);if(seen.has(k))return false;seen.add(k);return true});
+}
 async function find(which){
  const v=$(which+'Q').value.trim();q[which]=v;if(!v)return;
  cands[which]=[];$(which+'Box').querySelector('.cands').innerHTML=`<p class="hint"><span class="spin"></span>${t('searching')}</p>`;
- try{const j=await api('searchStation',{stationName:v},24*30);
-  const seen=new Set();cands[which]=(j.result?.station||[]).filter(s=>{const k=s.stationName+s.cityName+s.stationClass;if(seen.has(k))return false;seen.add(k);return true}).slice(0,8)
-   .map(s=>({name:s.stationName,x:+s.x,y:+s.y,city:s.cityName||'',kind:KIND[S.lang][s.stationClass]||''}));
- }catch(e){cands[which]=[];$(which+'Box').querySelector('.cands').innerHTML=`<p class="hint">${esc(e.message)}</p>`;return}
+ const near=S[which==='from'?'to':'from'];let list=[],errMsg='';
+ try{list=await osm(v,near)}catch(e){}
+ if(/역|정류장|터미널|공항|station|terminal/i.test(v)||!list.length){
+  try{const j=await api('searchStation',{stationName:v},24*30);
+   const seen=new Set();const st=(j.result?.station||[]).filter(s=>{const k=s.stationName+s.cityName+s.stationClass;if(seen.has(k))return false;seen.add(k);return true}).slice(0,6)
+    .map(s=>({name:s.stationName,x:+s.x,y:+s.y,city:s.cityName||'',kind:KIND[S.lang][s.stationClass]||''}));
+   list=/역|정류장|터미널|공항|station|terminal/i.test(v)?st.concat(list):list.concat(st);
+  }catch(e){errMsg=e.message}}
+ cands[which]=list.slice(0,10);
  placeBox(which);
+ if(!list.length&&errMsg)$(which+'Box').querySelector('.cands').innerHTML=`<p class="hint">${esc(errMsg)}</p>`;
 }
 function renderFavs(){$('favs').innerHTML=S.favs.map((f,i)=>`<button type="button" data-i="${i}" title="${esc(f.city)}">${esc(f.name)}</button>`).join('')}
 // ---------- route models ----------
